@@ -23,7 +23,7 @@ import argparse
 Parser for run all the folds. Class args for one fold.
 
 """
-parser = argparse.ArgumentParser("Programma Ologrammi")
+parser = argparse.ArgumentParser("Programma Correzione Immagini")
 parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder Directory")
 parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
 parser.add_argument('-sv', '--save_img', action='store_true', help="Save correct images" )
