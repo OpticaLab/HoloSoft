@@ -9,7 +9,7 @@ setup(
         descripton="Hologram Package Analysis", 
         packages=['holoPkg'],
         package_dir={'holoPkg':'src'},
-        scripts=['analysis/ImgCorrect.py','analysis/main_polystyrene.py'],
+        scripts=['analysis/ImgCorrect.py','analysis/main_polystyrene.py', 'analysis/main_dust.py'],
         classifiers=[
             "Programming Language :: Python :: 3",
             "License :: OSI Approves :: GPL3",

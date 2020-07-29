@@ -38,6 +38,8 @@ parser.add_argument('-pf','--path_file', required=True, type = str, help='Name f
 parser.add_argument('-st', '--std_dev', required=True, type=int, help="Standard deviation cut off")
 parser.add_argument('-msk', '--mask_tresh', required=True, type=int, help="Mask treshold")
 parser.add_argument('-r', '--ray', required=True, type=int, help="Beads ray")
+parser.add_argument('-par1', '--par1_deconv', required=True, type=int, help="Parameter for the filter deconvolution func.")
+parser.add_argument('-par2', '--par2_deconv', required=True, type=int, help="Parameter for the filter deconvolution func.")
 
 
 args = parser.parse_args()
@@ -45,12 +47,13 @@ args = parser.parse_args()
 #class args:
 #    folder_dir = "POLISTIRENE/14luglio/12"
 #    stack_dir = "0"
-#    num = 501
 #    end = 20
-#    path_file = "DAT_POLISTIRENE/14luglio/"
+#    path_file = "DAT_POLISTIRENE/14luglio/12"
 #    std_dev = 0.016
 #    msk_tresh = 0.65
 #    ray = 1
+#    par1_deconv = 0.0509
+#    par2_deconv = 0.00090
 
 cartella = args.stack_dir +"/"
 sample = args.folder_dir+"/"
@@ -66,13 +69,13 @@ bg_path_list.sort()
 
 start =0
 end = args.end
-N = len(data_path_list)
+N = 1024
 numero = 1
 contatore_mediana = 0
 
-path_file = "DAT_POLISTIRENE/14luglio/"
-make_the_fold(path_file)
-name_file = path_file +args.folder_dir+'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
+file = args.path_file
+make_the_fold(file)
+name_file = file +'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
 dati = open(name_file,'w+')
 
 
@@ -118,7 +121,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
         center_holo = center_holo -1
         
         t =0.3
-        centri = filter_deconv(N, center_holo, pixel_size, 0.0509, 0.00090) 
+        centri = filter_deconv(N, center_holo, pixel_size, args.par1_deconv, args.par2_deconv ) 
         centri = centri/np.amax(centri)
         image_max = ndi.maximum_filter(centri, size=50, mode='constant')
         coordinates = peak_local_max(centri, min_distance=200, threshold_abs=t)
