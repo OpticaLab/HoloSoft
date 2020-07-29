@@ -44,7 +44,7 @@ args = parser.parse_args()
 #    std_dev = 0.0138
 
 
-sample = args.folder_dir +"/" +args.stack_dir+"/dati3/"
+sample = args.folder_dir +"/" +args.stack_dir+"/dati/"
 path_list= os.listdir(sample)
    
 img_list= os.listdir(sample)
@@ -88,7 +88,7 @@ for i in np.arange(0, len(N)/end, 1):
         st = np.std(I_correct)
         std_array = np.append(std_array,st)
         
-        if args.save_img == "save":
+        if args.save_img:
             I_correct = I_correct/np.amax(I_correct)*255
             result = Image.fromarray(I_correct.astype('uint8'))
             result.save(directory_save_correct +'/img_'+ str(j)+'.tiff')

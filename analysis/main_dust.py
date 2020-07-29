@@ -47,7 +47,7 @@ args = parser.parse_args()
 #    stack_dir = "1"
 #    end = 20
 #    path_file = "DAT_RICE/135"
-#    std_dev = 0.016
+#    std_dev = 0.015
 #    msk_tresh = 0.65
 #    par1_deconv = 0.0509
 #    par2_deconv = 0.00090
@@ -138,7 +138,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
             
             if np.shape(coordinates)[0]>0: #deve almeno trovarne una
                 st = np.std(data_holo)
-                if st >=0.015: 
+                if st >= args.std_dev: 
                     img = center_holo
                         
                     for j in np.arange(0,len(coordinates),1): #ciclo sulle coordinate
@@ -187,7 +187,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                     plt.imshow(holo_cut[0,:,:], cmap = 'viridis')
                                 
                                     plt.axis('off')
-                                    plt.savefig(integral+str(numero)+'img_'+str(j)+'_'+str(i))                                
+                                    plt.savefig(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")                                
                                     plt.clf()
                                     plt.close()
                                 
@@ -223,7 +223,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                     """
                                     
                                     Integration_square = Integration_tw_square(holo, lim, pixel_size)                                   
-                                    Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, raggio, 70, integral+str(numero)+'cext_'+str(j)+'_'+str(i), "rice")
+                                    Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, raggio, 70, integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf", "rice")
                                     print('Cext Integrale=', Cext_tw_Integration_Square)
 #                                    
                                
@@ -248,7 +248,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                     fase = np.nan_to_num(fase)
                                     max_d, min_d, max_zarray, min_zarray = maximum_minimum(fase, z)
 #               
-                                    plot_twin_propagation( z, modulo, fase, integral+str(numero)+"propagation_"+str(j)+"_"+str(i))
+                                    plot_twin_propagation( z, modulo, fase, integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                     
                                     picchi = argrelextrema(gaussian_filter(modulo[10:85], sigma =3),np.greater)#75#47
                                    
@@ -271,7 +271,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                     plt.imshow(obj[int(lim)-80:int(lim)+80,int(lim)-80:int(lim)+80],cmap='gray')
                                     plt.colorbar()
                                     plt.axis('off')
-                                    plt.savefig(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(i))                                        
+                                    plt.savefig(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")                                        
                                     plt.clf()
                                     plt.close()
                                 
@@ -284,9 +284,9 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                     mask = mask*255
                                     mask = mask.astype(int)
                                     result = Image.fromarray((mask).astype('uint8'))
-                                    result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(i))
+                                    result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                     
-                                    dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(i), pixel_size, int(lim), 20, 0, 0, integral+str(numero)+"obj_modulo_mask_"+str(j)+"_"+str(i))
+                                    dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf", pixel_size, int(lim), 20, 0, 0, integral+str(numero)+"obj_modulo_mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                     print('area=',area)
                                 
                                 

@@ -187,7 +187,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                 plt.imshow(holo_cut[0,:,:], cmap = 'viridis')
                                 
                                 plt.axis('off')
-                                plt.savefig(integral+str(numero)+'_'+str(j)+'_img.pdf')                                
+                                plt.savefig(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")                                
                                 plt.clf()
                                 plt.close()
                                 
@@ -223,7 +223,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                 """
                                     
                                 Integration_square = Integration_tw_square(holo, lim, pixel_size)                                   
-                                Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, raggio, 70, integral+str(numero)+'_'+str(j)+'cext_quadrato.pdf',"poli")
+                                Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, raggio, 70, integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf","poli")
                                 print('Cext Integrale=', Cext_tw_Integration_Square)
 #                                
                                 
@@ -247,7 +247,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                 fase = np.nan_to_num(fase)
                                 max_d, min_d, max_zarray, min_zarray = maximum_minimum(fase, z)
 #               
-                                plot_twin_propagation( z, modulo, fase, integral+str(numero)+'_'+str(j)+"propagation.png")
+                                plot_twin_propagation( z, modulo, fase, integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                     
                                 picchi = argrelextrema(gaussian_filter(modulo[20:75], sigma =3),np.greater)
                                    
@@ -269,7 +269,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                 plt.imshow(obj[int(lim)-80:int(lim)+80,int(lim)-80:int(lim)+80],cmap='gray')
                                 plt.colorbar()
                                 plt.axis('off')
-                                plt.savefig(integral+str(numero)+'_'+str(j)+"modulo_nofilter.pdf")                                        
+                                plt.savefig(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")                                        
                                 plt.clf()
                                 plt.close()
                                 
@@ -282,9 +282,9 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                 mask = mask*255
                                 mask = mask.astype(int)
                                 result = Image.fromarray((mask).astype('uint8'))
-                                result.save(integral+str(numero)+'_'+str(j)+"mask.tiff")
+                                result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                 
-                                dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+'_'+str(j)+"mask.tiff", pixel_size, int(lim), 20, 0, 0, integral+str(numero)+'_'+str(j)+"obj_modulo_mask.tiff")
+                                dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf", pixel_size, int(lim), 20, 0, 0, integral+str(numero)+"obj_modulo_mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                 print('area=',area)
                                 
                                 
@@ -292,7 +292,7 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                 --CEXT--FIT
                                         
                                 """
-                                Cext_tw_fit, err_c, residui, params = Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, integral, numero, j)
+                                Cext_tw_fit, err_c, residui, params = Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf", numero, j)
                                 print('Cext Fit=',Cext_tw_fit)
                                     
                                 
