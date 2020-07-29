@@ -34,10 +34,10 @@ parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder 
 parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
 parser.add_argument('-end', '--end', required=True, type=int, help="Median cycle")
 parser.add_argument('-pf','--path_file', required=True, type = str, help='Name file .dat')
-parser.add_argument('-st', '--std_dev', required=True, type=int, help="Standard deviation cut off")
-parser.add_argument('-msk', '--mask_tresh', required=True, type=int, help="Mask treshold")
-parser.add_argument('-par1', '--par1_deconv', required=True, type=int, help="Parameter for the filter deconvolution func.")
-parser.add_argument('-par2', '--par2_deconv', required=True, type=int, help="Parameter for the filter deconvolution func.")
+parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standard deviation cut off")
+parser.add_argument('-msk', '--mask_tresh', required=True, type=float, help="Mask treshold")
+parser.add_argument('-par1', '--par1_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
+parser.add_argument('-par2', '--par2_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
 
 
 args = parser.parse_args()

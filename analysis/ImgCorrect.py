@@ -29,7 +29,7 @@ parser.add_argument('-sv', '--save_img', action='store_true', help="Save correct
 parser.add_argument('-del', '--delete_img', action='store_true', help="Delete medians" )
 parser.add_argument('-N', '--num', required=True, type=int, help="Number of total images")
 parser.add_argument('-end', '--end', required=True, type=int, help="Median cycle")
-parser.add_argument('-st', '--std_dev', required=True, type=int, help="Standard deviation cut off")
+parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standard deviation cut off")
 
 args = parser.parse_args()
 
