@@ -1,0 +1,15 @@
+numpy>=1.2
+scipy
+pyYaml
+pillow
+h5py
+emcee
+matplotlib
+xarray
+h5netcdf
+nose
+opencv-python
+argparse
+scikit-image
+os
+pylab-sdk
