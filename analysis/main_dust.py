@@ -32,7 +32,6 @@ Parser for run all the folds. Class args for one fold.
 parser = argparse.ArgumentParser("Mineral Dust")
 parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder Directory")
 parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
-parser.add_argument('-end', '--end', required=True, type=int, help="Median cycle")
 parser.add_argument('-pf','--path_file', required=True, type = str, help='Name file .dat')
 parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standard deviation cut off")
 parser.add_argument('-msk', '--mask_tresh', required=True, type=float, help="Mask treshold")
@@ -66,9 +65,10 @@ bg_path_list = os.listdir(bg_path)
 bg_path_list.sort()
 
 start =0
-end = args.end #0-20 intervallo della mediana
+end = 20 #0-20 intervallo della mediana
 contatore_mediana = 0
 numero = 1 #controllo sul numero di ologrammi
+raggio = 0
 
 file = args.path_file
 make_the_fold(file)
@@ -94,7 +94,7 @@ Lx = 1024
 Ly = 1280
 N = 1024
 
-for ciclo in np.arange(1,len(data_path_list)/end,1):
+for ciclo in np.arange(1,int(len(data_path_list)/end),1):
     for i in data_path_list[start:end]:
 
         """
@@ -284,9 +284,9 @@ for ciclo in np.arange(1,len(data_path_list)/end,1):
                                     mask = mask*255
                                     mask = mask.astype(int)
                                     result = Image.fromarray((mask).astype('uint8'))
-                                    result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                    result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
                                     
-                                    dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf", pixel_size, int(lim), 20, 0, 0, integral+str(numero)+"obj_modulo_mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                    dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), 20, 0, 0, integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0]))
                                     print('area=',area)
                                 
                                 

@@ -27,8 +27,6 @@ parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder 
 parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
 parser.add_argument('-sv', '--save_img', action='store_true', help="Save correct images" )
 parser.add_argument('-del', '--delete_img', action='store_true', help="Delete medians" )
-parser.add_argument('-N', '--num', required=True, type=int, help="Number of total images")
-parser.add_argument('-end', '--end', required=True, type=int, help="Median cycle")
 parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standard deviation cut off")
 
 args = parser.parse_args()
@@ -39,8 +37,6 @@ args = parser.parse_args()
 #    stack_dir = "1"
 #    save_img = True
 #    delete_img = True     
-#    num = 501
-#    end = 20
 #    std_dev = 0.0138
 
 
@@ -66,11 +62,10 @@ if args.save_img:
          
         
 start = 0
-end = args.end
-N = args.num
+end = 20
 std_array = np.array([])
 
-for i in np.arange(0, len(N)/end, 1):
+for i in np.arange(0, int(len(path_list)/end), 1):
     I_array = []
     
     for k in range(start, end):
@@ -92,7 +87,7 @@ for i in np.arange(0, len(N)/end, 1):
             I_correct = I_correct/np.amax(I_correct)*255
             result = Image.fromarray(I_correct.astype('uint8'))
             result.save(directory_save_correct +'/img_'+ str(j)+'.tiff')
-            print('Le immagini sono state corrette')
+          
     
     if args.delete_img:
         if all(k < args.std_dev for k in std_array) :

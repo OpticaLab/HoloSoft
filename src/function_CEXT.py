@@ -77,7 +77,7 @@ def media_angolare(R, holo, pixel_size, lim):
     return (Integrale_array, total_aver)
 
 
-def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph, numero, j):
+def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph_3d, name_graph_2d, numero, j):
     
     """
     Measurements of the FIT 2d of the hologram.
@@ -173,7 +173,7 @@ def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph, num
         cax.set_axes_locator(ip)
     
         fig.colorbar(im, cax=cax, ax=[ax,ax2])
-        plt.savefig(integral+str(numero)+'_'+str(j)+'holo_fit.pdf')
+        plt.savefig(name_graph_3d)
         plt.clf()
         plt.close()
     
@@ -190,7 +190,7 @@ def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph, num
         plt.xlabel('x($\mu$m)')
         plt.ylabel('Intensity a.u')
         plt.legend()
-        plt.savefig(name_graph)
+        plt.savefig(name_graph_2d)
         plt.clf()
         plt.close()
     
