@@ -1,8 +1,4 @@
-# Description
-
-Holohram package - functions to analyse holograms
-
-HoloSoft: Holography in Python
+# HoloSoft: Holography in Python
 =========================================
 
 HoloSoft is a python based tool for study mineral dust in ice core trough digital holography technique.
