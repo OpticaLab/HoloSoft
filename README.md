@@ -2,7 +2,7 @@
 
 Holohram package - functions to analyse holograms
 
-# Install 
+# How to install 
 
 ## Clone the repository
 
