@@ -31,70 +31,70 @@ parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standar
 
 args = parser.parse_args()
 
+# class args:
+#     folder_dir = "RICE/1"
+#     stack_dir = "1"
+#     save_img = True
+#     delete_img = True
+#     std_dev = 0.0138
 
-#class args:
-#    folder_dir = "RICE/1"
-#    stack_dir = "1"
-#    save_img = True
-#    delete_img = True     
-#    std_dev = 0.0138
 
+sample = args.folder_dir + "/" + args.stack_dir+"/dati/"
+path_list = os.listdir(sample)
 
-sample = args.folder_dir +"/" +args.stack_dir+"/dati/"
-path_list= os.listdir(sample)
-   
-img_list= os.listdir(sample)
+img_list = os.listdir(sample)
 img_list.sort()
-        
-directory_save_bg = args.folder_dir +"/" +args.stack_dir+"/mediana"   
-directory_save_correct = args.folder_dir + "/" +args.stack_dir+"/img_correct"
 
-try: 
-	os.stat(directory_save_bg) 
-except: 
-	os.makedirs(directory_save_bg)
+directory_save_bg = args.folder_dir + "/" + args.stack_dir+"/mediana"
+directory_save_correct = args.folder_dir + "/" + args.stack_dir+"/img_correct"
 
-if args.save_img:   
-    try: 
-        os.stat(directory_save_correct)  
-    except: 
-        os.makedirs(directory_save_correct) 
-         
-        
+try:
+    os.stat(directory_save_bg)
+except:
+    os.makedirs(directory_save_bg)
+
+if args.save_img:
+    try:
+        os.stat(directory_save_correct)
+    except:
+        os.makedirs(directory_save_correct)
+
+
 start = 0
 end = 20
 std_array = np.array([])
 
 for i in np.arange(0, int(len(path_list)/end), 1):
     I_array = []
-    
+
     for k in range(start, end):
         I_array.append(Image.open(sample + img_list[k]).convert("L"))
-    I_array = np.array([np.asarray(im) for im in I_array])      
-    img_median = np.median(I_array,axis=0)
+    I_array = np.array([np.asarray(im) for im in I_array])
+    img_median = np.median(I_array, axis=0)
     result = Image.fromarray(img_median.astype('uint8'))
-    result.save(directory_save_bg+'/median_'+format(start,"04")+'_'+format(end,"04")+'.tiff')
-    
+    result.save(directory_save_bg+'/median_' +
+                format(start, "04")+'_'+format(end, "04")+'.tiff')
+
     std_array = np.array([])
     for j in range(start, end):
         im = Image.open(sample + img_list[j]).convert("L")
         I = np.asarray(im)
-        I_correct = (I)/(img_median) 
+        I_correct = (I)/(img_median)
         st = np.std(I_correct)
-        std_array = np.append(std_array,st)
-        
+        std_array = np.append(std_array, st)
+
         if args.save_img:
             I_correct = I_correct/np.amax(I_correct)*255
             result = Image.fromarray(I_correct.astype('uint8'))
-            result.save(directory_save_correct +'/img_'+ str(j)+'.tiff')
-          
-    
+            result.save(directory_save_correct + '/img_' + str(j)+'.tiff')
+
     if args.delete_img:
-        if all(k < args.std_dev for k in std_array) :
+        if all(k < args.std_dev for k in std_array):
             for m in range(start, end):
                 os.remove(sample + img_list[m])
-            os.remove(directory_save_bg+'/median_'+format(start,"04")+'_'+format(end,"04")+'.tiff')
+            os.remove(directory_save_bg+'/median_' +
+                      format(start, "04")+'_'+format(end, "04")+'.tiff')
             print("la media è stata cancellata")
-    
-    start = start +20
-    end = end +20
+
+    start = start + 20
+    end = end + 20
