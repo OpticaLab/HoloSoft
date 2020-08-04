@@ -12,3 +12,4 @@ opencv-python
 argparse
 scikit-image
 pylab-sdk
+imutils

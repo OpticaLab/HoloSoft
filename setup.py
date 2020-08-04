@@ -7,8 +7,8 @@ setup(
         author="Claudia Ravasio",
         author_email="claudia.ravasio@unimi.it",
         descripton="Hologram Package Analysis", 
-        packages=['holoPkg'],
-        package_dir={'holoPkg':'src'},
+        packages=['HoloSoft'],
+        package_dir={'HoloSoft':'src'},
         scripts=['analysis/ImgCorrect.py','analysis/main_polystyrene.py', 'analysis/main_dust.py', 'analysis/FindCenters.py'],
         classifiers=[
             "Programming Language :: Python :: 3",

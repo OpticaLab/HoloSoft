@@ -14,7 +14,7 @@ import holopy as hp
 from scipy import ndimage as ndi
 from skimage.feature import peak_local_max
 import argparse
-from holoPkg import *
+from HoloSoft import *
 
 parser = argparse.ArgumentParser("Find Centers")
 parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder Directory")

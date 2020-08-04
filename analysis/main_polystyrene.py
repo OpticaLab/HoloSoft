@@ -23,7 +23,7 @@ from PIL import Image
 import argparse
 from scipy.ndimage import measurements
 
-from holoPkg import *
+from HoloSoft import *
 
 """
 Parser for run all the folds. Class args for one fold.

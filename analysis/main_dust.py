@@ -21,7 +21,7 @@ from PIL import Image
 import argparse
 from scipy.ndimage import measurements
 
-from holoPkg import *
+from HoloSoft import *
 
 
 """
