@@ -20,20 +20,19 @@ def matrix_R(N, pixel_size):
     Measurements of the positions matrix and of the angles matrix
 
     Args
-    -----------------------------------------------------
-    N: (int)
+    -------------------------------------------------------
+    N (int):
         Shape of the hologram
-    pixel_size: (float)
+    pixel_size (float):
         Value of the pixel size (um)
 
     Returns
     -------------------------------------------------------
-    R: (:class:`.Image` or :class:`.VectorGrid`)
+    R (:class:`.Image` or :class:`.VectorGrid`):
        Matrix of positions 
-    A: ():class:`.Image` or :class:`.VectorGrid`)
+    A (:class:`.Image` or :class:`.VectorGrid`):
        Matrix of angles (°) 
     """
-
     onesvec = np.ones(N)
     inds = (np.arange(N)+.5 - N/2.) / (N-1.)
     X = np.outer(onesvec, inds)
@@ -48,15 +47,15 @@ def media_angolare(R, holo, pixel_size, lim):
     Measurements of the angular average of the hologram and the angular integration
 
     Args
-    -----------------------------------------------------
-    R: (:class:`.Image` or :class:`.VectorGrid`)
+    -------------------------------------------------------
+    R (:class:`.Image` or :class:`.VectorGrid`):
        Matrix of positions   
-    holo: (:class:`.Image` or :class:`.VectorGrid`)
+    holo (:class:`.Image` or :class:`.VectorGrid`):
        Hologram in function of x,y
-    pixel_size: (float)
+    pixel_size (float):
         Value of the pixel size (um)
-    lim: (int)
-        Center of the hologram
+    lim (int):
+        Half length of the hologram (center of the hologram)
 
     Returns
     -------------------------------------------------------
@@ -65,7 +64,6 @@ def media_angolare(R, holo, pixel_size, lim):
     total_aver: (float or list of floats)
        Angular average of the hologram 
     """
-
     total_aver = np.array([])
     restrict = np.array([])
     Integrale_array = np.array([])
@@ -86,7 +84,7 @@ def media_angolare(R, holo, pixel_size, lim):
     return Integrale_array, total_aver
 
 
-def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph_3d, name_graph_2d, numero, j):
+def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph_3d, name_graph_2d):
     """
     Measurements of the FIT 2d of the hologram.
     By the fit you can have 
@@ -96,42 +94,38 @@ def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph_3d, 
 
     Args
     -----------------------------------------------------
-
-    holo: (:class:`.Image` or :class:`.VectorGrid`)
-       Hologram in function of x,y
-    pixel_size: (float)
+    holo (:class:`.Image` or :class:`.VectorGrid`):
+        Hologram in function of x,y
+    pixel_size (float):
         Value of the pixel size (um)
-    z: (float or list of floats)
+    z (float or list of floats):
        Distance of propagation 
-    fuoco: (float)
+    fuoco (float):
         Position of the focal point (um)
-    lim: (int)
-        Center of the hologram
-    k: (float)
-        wavevector
-    x_fit_1: (float or list of floats)
-        x-array of the angular average
-    media: (float or list of floats)
-        angular average of the hologram 
-    integral: (str)
-       Path of the directory where save the data
-    numero: (int)
-        parameter of control for each hologram    
-    j: (str)
-        str name of the number of object in each image
-
+    lim (int):
+        Half length of the hologram (center of the hologram)
+    k (float):
+        Wavevector
+    x_fit_1 (float or list of floats):
+        X-array of the angular average
+    media (float or list of floats):
+        Angular average of the hologram 
+    name_graph_3d (str):
+       Name of the image saved, Cext fit 3d
+    name_graph_2d:
+        Name of the image saved, Cext fit 2d 
+    
     Returns
     -------------------------------------------------------
-    c: (float)
+    c (float):
         Value of the Cext
-    err_c: (float)
+    err_c (float):
         error of the Cext value
-    residui: (:class:`.Image` or :class:`.VectorGrid`)
+    residui (:class:`.Image` or :class:`.VectorGrid`):
         residuals of the fit
-    params : (float)
+    params (float):
         params of the fit: S(0), phase, sigma (of the exp), A (constant), zeta 
     """
-
     x_fit = np.arange(len(holo))*pixel_size
     y_fit = np.arange(len(holo))*pixel_size
     x_f, y_f = np.meshgrid(x_fit, y_fit)
@@ -223,21 +217,20 @@ def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph_3d, 
 
 def Integration_tw_square(holo, lim, pixel_size):
     """
-    Integration of the hologram tw square.
+    Integration of the hologram from the center point to the edges throw square
 
     Args
     -----------------------------------------------------
-
-    holo: (:class:`.Image` or :class:`.VectorGrid`)
+    holo (:class:`.Image` or :class:`.VectorGrid`):
        Hologram in function of x,y
-    lim: (int)
-        Center of the hologram
-    pixel_size: (float)
+    lim (int):
+        Half length of the hologram (center of the hologram)
+    pixel_size (float):
         Value of the pixel size (um)
 
     Returns
      -----------------------------------------------------
-    Integrale_array: (float or list of floats)
+    Integrale_array (float or list of floats):
        Integration of the hologram tw square 
     """
     Integrale_array = np.array([])
@@ -248,31 +241,29 @@ def Integration_tw_square(holo, lim, pixel_size):
     return Integrale_array
 
 
-def Cext_tw_integration(Integrale_array, raggio, numero_linea, name_graph, dati):
+def Cext_tw_integration(Integrale_array, raggio, name_graph, dati):
     """
     Plot of the integration of the hologram. 
     By this you can have 
     1) Cext
-    2) so by the Optical Theorem you can obtain the real part of S(0)
+    2) The real part of S(0) with the Optical Theorem
 
     Args
     -----------------------------------------------------
-
-    Integrale_array: (float or list of floats)
+    Integrale_array (float or list of floats):
        Integration of the hologram, can be tw circle or square 
-    raggio: (int)
+    raggio (int):
         Ray of the sphere. It needs for obtain the expected value of cext
-    numero:linea: (int)
-        Only for a beautifiul graph (lenght of the exp value of cext line )
-    graph name: (str)
-        str name of the graph to save
+    graph name (str):
+        Name of the image savedù
+    dati (str):
+        If the object is calibrated you may want a measurement of expected Cext 
 
     Returns
-     -----------------------------------------------------
+    ------------------------------------------------------
     y[0]: (float)
         Value of the Cext
     """
-
     medium_index = 1.33
     illum_wavelen = 0.6328
     illum_polarization = (0, 1)

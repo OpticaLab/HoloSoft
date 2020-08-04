@@ -9,6 +9,27 @@ Created on Mon Feb 24 15:43:16 2020
 import numpy as np
 
 def filter_deconv(N, img, pix_size, A, B):
+    """
+    Template matching between the normalized hologram and a prior function
+    
+    Args:
+    -------------------------------------------------------
+        N (int):
+            Size of the hologram
+        img (:class:`.Image` or :class:`.VectorGrid`):
+            Matrix of the contrast hologram
+        pix_size (float):
+            Value of the pixel size (um)
+        A (float):
+            First parameter of the function
+        B (float):
+            Second parameter of the function
+
+    Returns:
+    -------------------------------------------------------
+        map_centers (:class:`.Image` or :class:`.VectorGrid`):
+            Matrix of the deconvolved hologram
+    """    
     onesvec = np.ones(N)
     inds  = (np.arange(N)+.5 - N/2.) /(N-1.)
     X = np.outer(onesvec, inds)

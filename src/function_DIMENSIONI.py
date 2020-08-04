@@ -24,17 +24,17 @@ def propagation_module(z, rec_vol, limx, limy, num):
     
     Args
     -------------------------------------------------------
-    rec_vol: (:class:`.Image` or :class:`.VectorGrid`)
-       Hologram in function of x,y,z
-    z: (float or list of floats)
+    rec_vol (:class:`.Image` or :class:`.VectorGrid`):
+       Matrix field in function of x,y,z
+    z (float or list of floats):
        Distance to propagate. 
-    lim: (int)
-        Center of the hologram to propagate
+    lim (int):
+        Half length of the hologram (center of the hologram)
     
     Returns
     -------------------------------------------------------
-    module_arr: (np.array)
-       The module of the hologram progagated to a distance d from its current
+    module_arr (np.array):
+       The module of the hologram progagated to a distance z from its current
        location calculated at the center of the hologram.
     """  
     module_arr=np.array([])   
@@ -56,19 +56,19 @@ def propagation_phase(phase, p, z, limx, limy, num):
     
     Args
     -------------------------------------------------------
-    phase : (:class:`.Image` or :class:`.VectorGrid`)
+    phase (:class:`.Image` or :class:`.VectorGrid`):
         Phase of the Hologram in function of x,y,z
-    p: (float or list of floats)
+    p (float or list of floats):
         Reference wave, that hasn't scattered
-    z:  (float or list of floats)
+    z  (float or list of floats):
        Distance to propagate. 
-    lim: (int)
-        Center of the hologram to propagate
+    lim (int):
+        Half length of the hologram (center of the hologram)
     
     Returns
     -------------------------------------------------------
-    phase_arr : (float or list of floats)
-       The phase of the hologram progagated to a distance d from its current
+    phase_arr (float or list of floats):
+       The phase of the hologram progagated to a distance z from its current
        location calculated at the center of the hologram with respect to the
        reference wave.
     """  
@@ -104,23 +104,22 @@ def maximum_minimum(array, z):
     
     Args
     -------------------------------------------------------
-    array: (float or list of floats)
+    array (float or list of floats):
         Array of which you want calculate the extremes
-    z:  (float or list of floats)
+    z (float or list of floats):
         Distance to propagate  
     
     Returns
     --------------------------------------------------------
-    d_max: (float)
+    d_max (float):
         Distance[pixels] at which the array have the maximum value
-    d_min: (float)
+    d_min (float):
         Distance[pixels] at which the array have the minimun value
-    z_max: (int)
+    z_max (int):
         Array position at which the array have the maximum value
-    z_min: (int)
+    z_min (int):
         Array position at which the array have the minium value    
     """
-    
     max_array = np.amax(array)
     d_max = z[np.where(array== max_array)[0]]
     z_max = np.where(array == max_array)[0]
@@ -134,27 +133,25 @@ def maximum_minimum(array, z):
 def plot_twin_propagation(z, module_arr, phase_arr, directory_graph):
     """
     Calculates the plot of the propagation of the hologram along the optical
-    axis and at the center of the hologram both studing the intensity of the
-    field and the phase of the field. 
+    axis and at the center of the hologram both studying the module and the phase of the field. 
     
     Args
     -------------------------------------------------------
-    z: (float or list of floats)
+    z (float or list of floats):
         Distance to propagate  
-    module_arr: (float or list of floats) 
+    module_arr (float or list of floats):
         Array of the intensity of the field propagated
-    phase_arr: (float or list of floats) 
+    phase_arr (float or list of floats):
         Array of the phase of the field propagated
-    directory_graph: str
+    directory_graph (str):
         Path where the graph is saved         
         
     Returns
     -------------------------------------------------------
     0: the graph is saved authomatically.
-        By the graph the point of discontinuity can be seen and it can be possibkìle
+        By the graph the point of discontinuity can be seen and it can be possible
         calculate the z position of the particle     
     """
-    
     fig, ax1 = plt.subplots()
     ax1.plot(z,module_arr, '-b*', label='module')
     
@@ -175,52 +172,50 @@ def plot_twin_propagation(z, module_arr, phase_arr, directory_graph):
     return 0
 
 
-def treshold(z, phase, p):
-    """
-    Calculates the phase of the hologram, with the respect of the reference
-    wave, at the initial position of the particle.
+# def treshold(z, phase, p):
+#     """
+#     Calculates the phase of the hologram, with the respect of the reference
+#     wave, at the initial position of the particle.
     
-    Args
-    -------------------------------------------------------
-    z: (int)
-        Position of the particle object
-    phase: (float or list of floats) 
-        Array of the phase of the field propagated
-    p: (float or list of floats) 
-        Reference wave, that hasn't scattered
-    lim: (int)
-        Center of the hologram to propagate   
+#     Args
+#     -------------------------------------------------------
+#     z: (int)
+#         Position of the particle object
+#     phase: (float or list of floats) 
+#         Array of the phase of the field propagated
+#     p: (float or list of floats) 
+#         Reference wave, that hasn't scattered
         
-    Returns
-    -------------------------------------------------------
-    diff: (:class:`.Image` or :class:`.VectorGrid`)
-        Matrix of the phase hologram at the plane of the focus (object position)
-    """
-    p = p[z] * np.ones((int(len(phase/2)),int(len(phase/2))))
-    diff=phase[:,:,z] -p
-    return (diff)
+#     Returns
+#     -------------------------------------------------------
+#     diff: (:class:`.Image` or :class:`.VectorGrid`)
+#         Matrix of the phase hologram at the plane of the focus (object position)
+#     """
+#     p = p[z] * np.ones((int(len(phase/2)),int(len(phase/2))))
+#     diff=phase[:,:,z] -p
+#     return diff
 
 
 
 def midpoint(ptA, ptB):
     """
-    Calculates the middle point from two point 
+    Calculates the middle point of two point 
     
     Args
     -------------------------------------------------------
-    ptA:  (int)
+    ptA (int):
        Position A
-    ptB:  (int)
+    ptB (int):
        Position B
         
     Returns
-    -------
+    --------------------------------------------------------
     The middle point: (float)
     """
-    return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
+    return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
 
-def object_dimension(directory_obj, pixel_size,lim, num_min, num_max, num_ratio, name_save):
+def object_dimension(directory_obj, pixel_size, lim, name_save):
     """
     Calculates the diameters of an object, not circular.
     
@@ -236,26 +231,25 @@ def object_dimension(directory_obj, pixel_size,lim, num_min, num_max, num_ratio,
     
     Args
     -------------------------------------------------------
-    directory_obj: (str)
+    directory_obj (str):
        Path of the directory of the image of the object reconstructed at the 
        focal point.
-    pixel_size: (float)
+    pixel_size (float):
         Value of the pixel size (um)
-    lim: (int)
-        Value of the half shape of the new matrix. It will be the new center 
+    lim (int):
+        Value of the half shape of the new matrix (the new center)
+    name_save (str):
+        Name of the image saved
     
     Returns
     -------------------------------------------------------
-    orig: (:class:`.Image` or :class:`.VectorGrid`)
-        Original image plus the dimension of the diameter labelled
-    dimA: (float)
-        Value of the the first diameter
-    dimB: (float)
-        Value of the the second diameter
-    ratio: (float)
+    dimS (float):
+        Value of the the smaller diameter
+    dimL (float):
+        Value of the the longer diameter
+    ratio (float):
         Value of the ratio of the two diameters
     """
-    
     image = cv2.imread(directory_obj)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     #perform the countour
@@ -312,13 +306,13 @@ def object_dimension(directory_obj, pixel_size,lim, num_min, num_max, num_ratio,
                         dimS = dimB
                         dimL = dimA
             
-                    if dimS<num_min and dimS>num_max and ratio>num_ratio:
-                        if dimL<num_min  and dimL>num_max:
+                    if dimS<50 and dimS>0 and ratio>0:
+                        if dimL<50  and dimL>0:
                             cv2.putText(orig, "{:.1f}um".format(dimA),(int(tltrX - 5), int(tltrY - 5)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100),1)
                             cv2.putText(orig, "{:.1f}um".format(dimB),(int(trbrX + 8), int(trbrY+ 10)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100), 1)
                            # plt.title("{:.1f}um".format(dimA)+"{:.1f}um".format(dimB))
                             result = Image.fromarray((orig).astype('uint8')) 
-                            result.save(name_save+'.png')
+                            result.save(name_save)
                         else:
                             dimS=np.nan
                             dimL=np.nan
@@ -346,7 +340,28 @@ def object_dimension(directory_obj, pixel_size,lim, num_min, num_max, num_ratio,
     return dimS, dimL, ratio
     
     
-def symmetry(holo_cut, R, A, freq, lim, graph_name):  
+def simmetry(holo_cut, R, A, freq, lim, graph_name): 
+    """Function to find the simmetry of the object startin from the hologram path
+
+    Args
+    -------------------------------------------------------
+        holo_cut (:class:`.Image` or :class:`.VectorGrid`):
+            Matrix data of the feature of interest of hologram
+        R (:class:`.Image` or :class:`.VectorGrid`):
+            Matrix of positions
+        A (:class:`.Image` or :class:`.VectorGrid`):
+            Matrix of angles (°)
+        freq (int):
+            Step of the angle
+        lim (int):
+            Half length of the hologram (center of the hologram)
+        graph_name (str):
+            Name of the graph saved
+
+    Returns
+    -------------------------------------------------------
+        0
+    """    
     angle = 30
     holo_forma= holo_cut[0,:,:].values
     x_forma = np.arange(0,360,30)
@@ -402,31 +417,33 @@ def symmetry(holo_cut, R, A, freq, lim, graph_name):
     plt.clf()
     plt.close()
     
-    return(0)
+    return 0
 
 def plot_bello(z, holo_cut, illum_wavelen ,medium_index, lim, nome_graph):
-    # """
-    # Calculates the plot of the propagation of the hologram along the optical
-    # axis and at the center of the hologram both studing the intensity of the
-    # field and the phase of the field. 
+    """
+    Calculates the plot of the propagation of the hologram along the optical
+    axis and at the center of the hologram both studing the intensity of the
+    field and the phase of the field. 
     
-    # Args
-    # -------------------------------------------------------
-    # z: (float or list of floats)
-    #     Distance to propagate  
-    # holo_cut: (float or list of floats) 
-    #     Array of the intensity of the field propagated
-    # phase_arr: (float or list of floats) 
-    #     Array of the phase of the field propagated
-    # directory_graph: str
-    #     Path where the graph is saved         
+    Args
+    -------------------------------------------------------
+    z (float or list of floats):
+        Distance to propagate  
+    holo_cut (:class:`.Image` or :class:`.VectorGrid`):
+        Matrix data of the feature of interest of hologram
+    illum_wavelen (float):
+        Source wavelength
+    medium index (str):
+        Refraction index of the medium      
+    lim (int):
+        Half length of the hologram (center of the hologram)
+    nome_graph (str): 
+        Name of the graph saved
         
-    # Returns
-    # -------------------------------------------------------
-    # 0: the graph is saved authomatically.
-    #     By the graph the point of discontinuity can be seen and it can be possibkìle
-    #     calculate the z position of the particle     
-    # """
+    Returns
+    -------------------------------------------------------
+    0   
+    """
     holo_cut = holo_cut +1
     rec_vol = hp.propagate(holo_cut, z, illum_wavelen = illum_wavelen, medium_index = medium_index)
                                                 
@@ -440,7 +457,7 @@ def plot_bello(z, holo_cut, illum_wavelen ,medium_index, lim, nome_graph):
     plot_twin_propagation(0,z, modulo, fase, nome_graph)                                
     holo_cut = holo_cut -1
     
-    return (0)
+    return 0
     
     
    

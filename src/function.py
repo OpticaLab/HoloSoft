@@ -37,18 +37,19 @@ def rebin(a, shape, pixcombine):
     pixels binned.
     Note that the old array dimensions have to be multiples of the new array
     dimensions.
-    Parameters
-    ----------
-    a: :class:`.Image` or :class:`.VectorGrid`
+    
+    Args
+    ------------------------------------------------------
+    a (:class:`.Image` or :class:`.VectorGrid`):
         Array to reshape (combine pixels)
-    shape: (int, int)
+    shape (int, int):
         New size of array
-    pixcombine: str
+    pixcombine (str):
         The method to combine the pixels with. Choices are sum, mean and median
         
     Returns
-    -------
-    reshaped_array: :class:`.Image` or :class:`.VectorGrid`
+    ------------------------------------------------------
+    reshaped_array (:class:`.Image` or :class:`.VectorGrid`):
         Matrix with the new shape binned
     """
     sh = shape[0], a.shape[0]//shape[0], shape[1], a.shape[1]//shape[1]
@@ -62,7 +63,6 @@ def rebin(a, shape, pixcombine):
     return reshaped_array
         
 
-
 def calcolo_hologram_BINNING(cartella, name, pixel_size, lim, binsize, pixcombine):
     """
     Open the image with the correspective path, it calculates the center of the
@@ -74,24 +74,25 @@ def calcolo_hologram_BINNING(cartella, name, pixel_size, lim, binsize, pixcombin
     Warning: to find the center you have to open the image with holopy function.
     But you can't rebbined DataArray. So you had to open it also with PIL.
     !!!!Maybe you can correct this in a second time!!!!
-    Parameters
-    ----------
-    cartella: str
+    
+    Args
+    ------------------------------------------------------
+    cartella (str):
         Name of the folder of the image
-    name: str
+    name (str):
         Number within the name of the image (without type)
-    pixel_size: float
+    pixel_size (float):
         Value of the pixel size (um)
-    lim: int
+    lim (int):
         Value of the half shape of the new matrix. It will be the new center
-    binsize: int
+    binsize (int):
         Value of the new reshape
-    pixcombine: str
+    pixcombine (str):
         The method to combine the pixels with. Choices are sum, mean and median
         
     Returns
-    -------
-    data_holo: :class:`.Image` or :class:`.VectorGrid`
+    ------------------------------------------------------
+    data_holo (:class:`.Image` or :class:`.VectorGrid`):
         Data reshaped of the hologram
     """
     raw_holo = hp.load_image("../Campioni/Flusso/"+cartella+"/img_correct/img_" + name + ".tiff", spacing = pixel_size)  
@@ -111,12 +112,32 @@ def calcolo_hologram_BINNING(cartella, name, pixel_size, lim, binsize, pixcombin
     hp.show(data_holo)
     plt.show()
     
-    return(data_holo)
+    return data_holo
     
+    
+def find_the_new_lim(center_x, center_y, lim, lim1, lim2, N):
+    """[summary]
 
-      
-    
-def find_the_new_lim(center_x, center_y, lim,lim1,lim2, N):
+    Args:
+    ------------------------------------------------------
+    center_x (int):
+        X center of the hologram
+    center_y (int):
+        Y center of the hologram
+    lim (int or float):
+        Initial half length of the hologram
+    lim1 (int or float):  
+        Check for the orizontal extrema
+    lim2 (int or float):  
+        Check for the vertical extrema
+    N (int):
+        Size of the hologram
+
+    Returns:
+    ------------------------------------------------------
+    lim(float):
+        New half length of the hologram
+    """    
     if center_x < center_y:
         if center_x - lim < 0:
             lim1 = int(center_x)
@@ -146,12 +167,24 @@ def find_the_new_lim(center_x, center_y, lim,lim1,lim2, N):
             lim = lim1
         else:
             lim = lim2                                  
-    return(lim)
+    return lim
     
     
-def make_the_fold(nome_cartella):      
+def make_the_fold(nome_cartella):
+    """
+    Make a non-existing fold
+
+    Args:
+    ------------------------------------------------------
+    nome_cartella (str):
+        Name of the fold
+
+    Returns:
+    ------------------------------------------------------
+    0
+    """     
     try: 
         os.stat(nome_cartella) 
     except: 
         os.makedirs(nome_cartella)
-    return(0)
+    return 0

@@ -221,7 +221,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                 """
                                     
                                 Integration_square = Integration_tw_square(holo, lim, pixel_size)                                   
-                                Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, raggio, 70, integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf","poli")
+                                Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, raggio, integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf","poli")
                                 print('Cext Integrale=', Cext_tw_Integration_Square)
 #                                
                                 
@@ -282,7 +282,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                 result = Image.fromarray((mask).astype('uint8'))
                                 result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
                                 
-                                dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), 20, 0, 0, integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0]))
+                                dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                 print('area=',area)
                                 
                                 
@@ -290,7 +290,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                 --CEXT--FIT
                                         
                                 """
-                                Cext_tw_fit, err_c, residui, params = Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf",integral+str(numero)+'HoloFit_'+str(j)+'_'+str(os.path.splitext(i)[0]), numero, j)
+                                Cext_tw_fit, err_c, residui, params = Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf",integral+str(numero)+'HoloFit_'+str(j)+'_'+str(os.path.splitext(i)[0]))
                                 print('Cext Fit=',Cext_tw_fit)
                                     
                                 
