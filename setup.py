@@ -2,7 +2,7 @@ from distutils.core import setup
 from os import *
 
 setup(
-        name="holoPkg",
+        name="HoloSoft",
         version="0.0.1",
         author="Claudia Ravasio",
         author_email="claudia.ravasio@unimi.it",

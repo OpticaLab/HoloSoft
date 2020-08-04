@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 
 """
-Created on Sun May 19 16:21:39 2019
-
-@author: claudriel
-
 Script for correct the raw-images from the background. 
 The program takes all the N images in the directory path and it calculates 
 the median every "end".

@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Feb 22 15:35:45 2020
 
-@author: claudriel
-"""
 import numpy as np
 from scipy import optimize
 import matplotlib.pyplot as plt

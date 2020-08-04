@@ -1,11 +1,5 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Nov 14 22:39:27 2019
-
-@author: claudriel
-TEST PROGRAM, for find the right argparse par1 and par2 to put in the main files
-"""
 
 from pylab import *
 import numpy as np

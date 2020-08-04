@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sun May 19 16:08:33 2019
-
-@author: claudriel
-"""
 
 import sys
 import os
@@ -27,9 +22,6 @@ from scipy.sparse import csgraph
 from matplotlib.offsetbox import AnchoredText
 import time
 
-"""
-All the functions that you want :)
-"""
 
 def rebin(a, shape, pixcombine):
     """

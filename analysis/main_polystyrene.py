@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Nov 15 12:38:31 2019
-
-@author: claudriel
-
 This program analyses polystyrene holograms for test the setup. 
 """
 

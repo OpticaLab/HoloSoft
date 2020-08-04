@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Feb 24 17:12:37 2020
 
-@author: claudriel
-"""
 import numpy as np
 
 def media_angolare_mask(R, holo, pixel_size, lim):
