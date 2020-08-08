@@ -28,7 +28,8 @@ Parser for run all the folds. Class args for one fold.
 parser = argparse.ArgumentParser("Mineral Dust")
 parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder Directory")
 parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
-parser.add_argument('-pf','--path_file', required=True, type = str, help='Name file .dat')
+parser.add_argument('-pf','--path_file', required=True, type = str, help='Name file path.dat')
+parser.add_argument('-np','--number_path', required=True, type = str, help='Number file path.dat')
 parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standard deviation cut off")
 parser.add_argument('-msk', '--mask_tresh', required=True, type=float, help="Mask treshold")
 parser.add_argument('-par1', '--par1_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
@@ -42,6 +43,7 @@ args = parser.parse_args()
 #    stack_dir = "1"
 #    end = 20
 #    path_file = "DAT_RICE/135"
+#    numero_path = "1"
 #    std_dev = 0.015
 #    msk_tresh = 0.65
 #    par1_deconv = 0.0509
@@ -66,11 +68,12 @@ contatore_mediana = 0
 numero = 1 #controllo sul numero di ologrammi
 raggio = 0
 
-file = args.path_file
-make_the_fold(file)
-name_file = file + '_'+ args.stack_dir+ ".dat"  #file dove salvo dati
-name_file_2 = file + '_'+ args.stack_dir+ "_doppie.dat"  #file dove salvo dati
-name_file_3 = file + '_'+ args.stack_dir+ "_triple.dat"  #file dove salvo dati
+files = args.path_file
+
+make_the_fold(files)
+name_file = files + 'singole/'+args.number_path+'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
+name_file_2 = files + 'doppie/'+args.number_path+'_'+ args.stack_dir+ "_doppie.dat"  #file dove salvo dati
+name_file_3 = files + 'triple/'+args.number_path+'_'+ args.stack_dir+ "_triple.dat"  #file dove salvo dati
 
 dati = open(name_file,'w+')
 dati_2 = open(name_file_2,'w+')
@@ -181,7 +184,6 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                     plt.figure(0) #find center
                                     plt.figsize = (30,8)
                                     plt.imshow(holo_cut[0,:,:], cmap = 'viridis')
-                                
                                     plt.axis('off')
                                     plt.savefig(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")                                
                                     plt.clf()
@@ -290,6 +292,15 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                     --SAVE--DATA
                                         
                                     """
+                                    if len(area)>10:
+                                        os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(graph_centri+'confronto_'+str(i))
+                                        os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
+                                        os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            
                                     if (Cext_tw_Integration_Square >0) and (len(area)>1) and (len(area)<10):
                                 
                                         if len(area)>2:
