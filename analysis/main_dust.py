@@ -68,12 +68,17 @@ contatore_mediana = 0
 numero = 1 #controllo sul numero di ologrammi
 raggio = 0
 
-files = args.path_file
+file1 = args.path_file + 'singole/'
+file2 = args.path_file + 'doppie/'
+file3 = args.path_file + 'triple/'
 
-make_the_fold(files)
-name_file = files + 'singole/'+args.number_path+'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
-name_file_2 = files + 'doppie/'+args.number_path+'_'+ args.stack_dir+ "_doppie.dat"  #file dove salvo dati
-name_file_3 = files + 'triple/'+args.number_path+'_'+ args.stack_dir+ "_triple.dat"  #file dove salvo dati
+make_the_fold(file1)
+make_the_fold(file2)
+make_the_fold(file3)
+
+name_file = file1 + args.number_path+'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
+name_file_2 = file2 + args.number_path+'_'+ args.stack_dir+ "_doppie.dat"  #file dove salvo dati
+name_file_3 = file3 + args.number_path+'_'+ args.stack_dir+ "_triple.dat"  #file dove salvo dati
 
 dati = open(name_file,'w+')
 dati_2 = open(name_file_2,'w+')
@@ -179,8 +184,9 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                 if len(holo_cut[0,:,:]) % 2 == 0: #img deve essere di pixel dispari
 #                                    lim = lim-0.5
                                     holo_cut = holo_cut[:,int(lim-lim+1) : int(lim+lim), int(lim-lim+1) : int(lim+lim)]
-                                    lim = len(holo_cut[0,:,:])/2                                
-                                if np.shape(holo_cut)[1]>100 and np.shape(holo_cut)[2]>100:
+                                    lim = len(holo_cut[0,:,:])/2  
+                                                                  
+                                if np.shape(holo_cut)[1]>150 and np.shape(holo_cut)[2]>150:
                                     plt.figure(0) #find center
                                     plt.figsize = (30,8)
                                     plt.imshow(holo_cut[0,:,:], cmap = 'viridis')
@@ -285,23 +291,34 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                     result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
                                     
                                     dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
-                                    print('area=',area)
+                                    print('area=', area)
                                 
                                 
                                     """
                                     --SAVE--DATA
                                         
                                     """
-                                    if len(area)>10:
-                                        os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
-                                        os.remove(graph_centri+'confronto_'+str(i))
-                                        os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
-                                        os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
-                                        os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
-                                        os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
-                                        os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                    
+                                    if (any(area > 500)) or (len(area)>10) or (Cext_tw_Integration_Square <=0) :
+                                        print('delete')
+                                        
+                                        try:
+                                            os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(graph_centri+'confronto_'+str(i))
+                                            os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
+                                            os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                        except FileNotFoundError:
+                                            os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(graph_centri+'confronto_'+str(i))
+                                            os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
+                                            os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                             
-                                    if (Cext_tw_Integration_Square >0) and (len(area)>1) and (len(area)<10):
+                                    elif (Cext_tw_Integration_Square >0) and (len(area)>1) and (len(area)<10):
                                 
                                         if len(area)>2:
                                             
@@ -312,7 +329,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(dimA1[1])+' '+str(dimB1[1])+' '+str(dimA1[2])+' '+str(dimB1[2])+str(Cext_tw_Integration_Square),file=dati_3)
     
                                                 except TypeError:
-                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1)+' '+str(dimB1)+'  '+str(Cext_tw_Integration_Square),file=dati)
+                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati)
                                             
                                             else:
                                                 print(i)
@@ -321,12 +338,12 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(dimA1[1])+' '+str(dimB1[1])+' '+str(Cext_tw_Integration_Square),file=dati_2)
                                              
                                                 except TypeError:
-                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+' '+str(dimA1)+' '+str(dimB1)+'  '+str(Cext_tw_Integration_Square),file=dati)
+                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati)
                                             
                                         else:
                                             print(i)
                                             print('scritto')  
-                                            print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(dimA1)+' '+str(dimB1)+' '+str(Cext_tw_Integration_Square),file=dati)
+                                            print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(Cext_tw_Integration_Square),file=dati)
                                             
      
                                     else:

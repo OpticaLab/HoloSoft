@@ -257,13 +257,21 @@ def object_dimension(directory_obj, pixel_size, lim, name_save):
     cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)    
     cnts = imutils.grab_contours(cnts)
 
+    dimUno = np.array([])
+    dimDue = np.array([])
+    ratio_array = np.array([])
+    
+    
+    
     if cnts != []:
     # sort the contours from left-to-right
         (cnts, _) = contours.sort_contours(cnts)
-    
         n=0
+        dimUno = np.array([])
+        dimDue = np.array([])
+        ratio_array = np.array([])
+        
         for c in cnts:
-
         # compute the rotated bounding box of the contour
             orig = image.copy()
             box = cv2.minAreaRect(c)
@@ -306,35 +314,52 @@ def object_dimension(directory_obj, pixel_size, lim, name_save):
                         if dimL<50  and dimL>0:
                             cv2.putText(orig, "{:.1f}um".format(dimA),(int(tltrX - 5), int(tltrY - 5)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100),1)
                             cv2.putText(orig, "{:.1f}um".format(dimB),(int(trbrX + 8), int(trbrY+ 10)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100), 1)
-                           # plt.title("{:.1f}um".format(dimA)+"{:.1f}um".format(dimB))
                             result = Image.fromarray((orig).astype('uint8')) 
-                            result.save(name_save)
+                            result.save(name_save+'_'+str(n)+'.pdf')
                         else:
                             dimS=np.nan
                             dimL=np.nan
                             ratio=np.nan
+                            dimUno = np.append(dimUno,dimS)
+                            dimDue = np.append(dimDue,dimL)
+                            ratio_array = np.append(ratio_array,ratio)
             
                     else:
                         dimS=np.nan
                         dimL=np.nan
                         ratio=np.nan
+                        dimUno = np.append(dimUno,dimS)
+                        dimDue = np.append(dimDue,dimL)
+                        ratio_array = np.append(ratio_array,ratio)
                 else:
                     dimS=np.nan
                     dimL=np.nan
                     ratio=np.nan
+                    dimUno = np.append(dimUno,dimS)
+                    dimDue = np.append(dimDue,dimL)
+                    ratio_array = np.append(ratio_array,ratio)
             else: 
                 dimS=np.nan
                 dimL=np.nan
                 ratio=np.nan
+                dimUno = np.append(dimUno,dimS)
+                dimDue = np.append(dimDue,dimL)
+                ratio_array = np.append(ratio_array,ratio)
                 
             n=n+1
+            dimUno = np.append(dimUno,dimS)
+            dimDue = np.append(dimDue,dimL)
+            ratio_array = np.append(ratio_array,ratio)
     else:
         dimS=np.nan
         dimL=np.nan
         ratio=np.nan
+        dimUno = np.append(dimUno,dimS)
+        dimDue = np.append(dimDue,dimL)
+        ratio_array = np.append(ratio_array,ratio)
         
-    return dimS, dimL, ratio
-    
+    return dimUno, dimDue, ratio_array
+        
     
 def simmetry(holo_cut, R, A, freq, lim, graph_name): 
     """Function to find the simmetry of the object startin from the hologram path
