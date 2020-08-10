@@ -291,7 +291,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                     result = Image.fromarray((mask).astype('uint8'))
                                     result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
                                     
-                                    dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), len(area), integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                    dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), len(area), integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0]))
                                     
                                 
                                     """
