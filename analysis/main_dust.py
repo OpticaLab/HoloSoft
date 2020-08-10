@@ -258,7 +258,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                    
                                     picchi = picchi[0]
                                     for p in np.arange(0, len(picchi),1):
-                                        if modulo[10:85][picchi[p]]<0.5*np.amax(modulo[10:85]):
+                                        if modulo[10:85][picchi[p]]<0.4*np.amax(modulo[10:85]):
                                             picchi[p]=9999
                                     picchi = picchi[picchi != 9999]
                                    

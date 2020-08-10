@@ -308,8 +308,8 @@ def object_dimension(directory_obj, pixel_size,  lim, area, name_save):
                     ratio = dB/dA
                     dimS = dimB
                     dimL = dimA
-                    
-                if (dimS<100) and (dimS>0) and (ratio>0) and (dimL<100)  and (dimL>0) and (len(area) <10) and (all(area < 500)):
+                   
+                if (dimS<100) and (dimS>0) and (ratio>0) and (dimL<100)  and (dimL>0) and (len(area) <= 10) and (all(area < 500)):
                     cv2.putText(orig, "{:.1f}um".format(dimA),(int(tltrX - 5), int(tltrY - 5)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100),1)
                     cv2.putText(orig, "{:.1f}um".format(dimB),(int(trbrX + 8), int(trbrY+ 10)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100), 1)
                     result = Image.fromarray((orig).astype('uint8')) 
