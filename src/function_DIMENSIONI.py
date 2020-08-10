@@ -211,7 +211,7 @@ def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
 
-def object_dimension(directory_obj, pixel_size,  lim, area_len, name_save):
+def object_dimension(directory_obj, pixel_size,  lim, area, name_save):
     """
     Calculates the diameters of an object, not circular.
     
@@ -309,7 +309,7 @@ def object_dimension(directory_obj, pixel_size,  lim, area_len, name_save):
                     dimS = dimB
                     dimL = dimA
                     
-                if (dimS<100) and (dimS>0) and (ratio>0) and (dimL<100)  and (dimL>0) and (area_len <10):
+                if (dimS<100) and (dimS>0) and (ratio>0) and (dimL<100)  and (dimL>0) and (len(area) <10) and (all(area < 500)):
                     cv2.putText(orig, "{:.1f}um".format(dimA),(int(tltrX - 5), int(tltrY - 5)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100),1)
                     cv2.putText(orig, "{:.1f}um".format(dimB),(int(trbrX + 8), int(trbrY+ 10)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100), 1)
                     result = Image.fromarray((orig).astype('uint8')) 
