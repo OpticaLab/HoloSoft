@@ -285,14 +285,14 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                     mask= (obj[int(lim)-80:int(lim)+80,int(lim)-80:int(lim)+80]>0.65).astype(int) #per 2um 0.65 o 0-67
                                     lw,num = measurements.label(mask)
                                     area = (measurements.sum(mask, lw, range(num + 1)))*pixel_size*pixel_size
+                                    print('area=', area)
                                     mask = mask*255
                                     mask = mask.astype(int)
                                     result = Image.fromarray((mask).astype('uint8'))
                                     result.save(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
                                     
-                                    dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
-                                    print('area=', area)
-                                
+                                    dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), len(area), integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                    
                                 
                                     """
                                     --SAVE--DATA
@@ -301,22 +301,20 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                     
                                     if (any(area > 500)) or (len(area)>10) or (Cext_tw_Integration_Square <=0) :
                                         print('delete')
+
+                                        os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(graph_centri+'confronto_'+str(i))
+                                        os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
                                         
                                         try:
-                                            os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
-                                            os.remove(graph_centri+'confronto_'+str(i))
-                                            os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
-                                            os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
-                                            os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
-                                            os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
-                                            os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            for k in np.arange(0,len(dimA1),1):
+                                                os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+'_'+str(k)+".pdf")
                                         except FileNotFoundError:
-                                            os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
-                                            os.remove(graph_centri+'confronto_'+str(i))
-                                            os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
-                                            os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
-                                            os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
-                                            os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            print('no obj')
+                                              
                                             
                                     elif (Cext_tw_Integration_Square >0) and (len(area)>1) and (len(area)<10):
                                 

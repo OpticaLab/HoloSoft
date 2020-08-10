@@ -211,7 +211,7 @@ def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
 
-def object_dimension(directory_obj, pixel_size, lim, name_save):
+def object_dimension(directory_obj, pixel_size,  lim, area_len, name_save):
     """
     Calculates the diameters of an object, not circular.
     
@@ -294,43 +294,26 @@ def object_dimension(directory_obj, pixel_size, lim, name_save):
             dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
             dB = dist.euclidean((tlblX, tlblY), (trbrX, trbrY))
             
-            if dA !=0:
-                if dB!=0:
-        # compute the size of the object
-                    dimA = dA * pixel_size
-                    dimB = dB * pixel_size
+            if dA !=0 and dB!=0:
+                # compute the size of the object
+                dimA = dA * pixel_size
+                dimB = dB * pixel_size
         
-                    diff = dA - dB
-                    if diff < 0:
-                        ratio = dA/dB
-                        dimS = dimA
-                        dimL = dimB
-                    else:
-                        ratio = dB/dA
-                        dimS = dimB
-                        dimL = dimA
-            
-                    if dimS<50 and dimS>0 and ratio>0:
-                        if dimL<50  and dimL>0:
-                            cv2.putText(orig, "{:.1f}um".format(dimA),(int(tltrX - 5), int(tltrY - 5)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100),1)
-                            cv2.putText(orig, "{:.1f}um".format(dimB),(int(trbrX + 8), int(trbrY+ 10)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100), 1)
-                            result = Image.fromarray((orig).astype('uint8')) 
-                            result.save(name_save+'_'+str(n)+'.pdf')
-                        else:
-                            dimS=np.nan
-                            dimL=np.nan
-                            ratio=np.nan
-                            dimUno = np.append(dimUno,dimS)
-                            dimDue = np.append(dimDue,dimL)
-                            ratio_array = np.append(ratio_array,ratio)
-            
-                    else:
-                        dimS=np.nan
-                        dimL=np.nan
-                        ratio=np.nan
-                        dimUno = np.append(dimUno,dimS)
-                        dimDue = np.append(dimDue,dimL)
-                        ratio_array = np.append(ratio_array,ratio)
+                diff = dA - dB
+                if diff < 0:
+                    ratio = dA/dB
+                    dimS = dimA
+                    dimL = dimB
+                else:
+                    ratio = dB/dA
+                    dimS = dimB
+                    dimL = dimA
+                    
+                if (dimS<100) and (dimS>0) and (ratio>0) and (dimL<100)  and (dimL>0) and (area_len <10):
+                    cv2.putText(orig, "{:.1f}um".format(dimA),(int(tltrX - 5), int(tltrY - 5)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100),1)
+                    cv2.putText(orig, "{:.1f}um".format(dimB),(int(trbrX + 8), int(trbrY+ 10)), cv2.FONT_HERSHEY_SIMPLEX,0.25, (100, 100,100), 1)
+                    result = Image.fromarray((orig).astype('uint8')) 
+                    result.save(name_save+'_'+str(n)+'.pdf')
                 else:
                     dimS=np.nan
                     dimL=np.nan
