@@ -186,7 +186,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                     holo_cut = holo_cut[:,int(lim-lim+1) : int(lim+lim), int(lim-lim+1) : int(lim+lim)]
                                     lim = len(holo_cut[0,:,:])/2  
                                                                   
-                                if np.shape(holo_cut)[1]>150 and np.shape(holo_cut)[2]>150:
+                                if np.shape(holo_cut)[1]>200 and np.shape(holo_cut)[2]>200:
                                     plt.figure(0) #find center
                                     plt.figsize = (30,8)
                                     plt.imshow(holo_cut[0,:,:], cmap = 'viridis')
@@ -239,7 +239,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
 #                                
                                # prop_plot = plot_bello(holo_cut,illum_wavelen ,medium_index, lim,  integral+str(numero)+'_'+str(j)+"propagation.png" )
                                  
-                                    z = np.linspace(200,700, 100)
+                                    z = np.linspace(50,550, 100)
                                     rec_vol = hp.propagate(holo_cut, z, illum_wavelen = illum_wavelen, medium_index = medium_index)
                                                     
                                     modulo = propagation_module(z, rec_vol,int(lim),int(lim), 5)# int(centro[0]),int(centro[1]),
@@ -254,11 +254,11 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
 #               
                                     plot_twin_propagation( z, modulo, fase, integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                     
-                                    picchi = argrelextrema(gaussian_filter(modulo[10:85], sigma =3),np.greater)#75#47
+                                    picchi = argrelextrema(gaussian_filter(modulo[10:90], sigma =2),np.greater)#75#47
                                    
                                     picchi = picchi[0]
                                     for p in np.arange(0, len(picchi),1):
-                                        if modulo[10:85][picchi[p]]<0.4*np.amax(modulo[10:85]):
+                                        if modulo[10:90][picchi[p]]<0.4*np.amax(modulo[10:90]):
                                             picchi[p]=9999
                                     picchi = picchi[picchi != 9999]
                                    
@@ -304,7 +304,6 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
 
                                         os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
                                         os.remove(graph_centri+'confronto_'+str(i))
-                                        os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
                                         os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                         os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                         os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
@@ -314,7 +313,11 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                                 os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+'_'+str(k)+".pdf")
                                         except FileNotFoundError:
                                             print('no obj')
-                                              
+                                            
+                                        try:
+                                            os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                        except FileNotFoundError:
+                                            print('no cext')   
                                             
                                     elif (Cext_tw_Integration_Square >0) and (len(area)>1) and (len(area)<10):
                                 
@@ -326,16 +329,16 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                                 try :
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(dimA1[1])+' '+str(dimB1[1])+' '+str(dimA1[2])+' '+str(dimB1[2])+str(Cext_tw_Integration_Square),file=dati_3)
     
-                                                except TypeError:
+                                                except (TypeError,IndexError) as e:
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati)
-                                            
+                                                
                                             else:
                                                 print(i)
                                                 print('scritto')
                                                 try :
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(dimA1[1])+' '+str(dimB1[1])+' '+str(Cext_tw_Integration_Square),file=dati_2)
                                              
-                                                except TypeError:
+                                                except (TypeError,IndexError) as e:
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati)
                                             
                                         else:

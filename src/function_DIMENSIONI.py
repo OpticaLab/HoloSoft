@@ -315,16 +315,16 @@ def object_dimension(directory_obj, pixel_size,  lim, area, name_save):
                     result = Image.fromarray((orig).astype('uint8')) 
                     result.save(name_save+'_'+str(n)+'.pdf')
                 else:
-                    dimS=np.nan
-                    dimL=np.nan
-                    ratio=np.nan
+                    dimS= 0
+                    dimL= 0
+                    ratio= 0
                     dimUno = np.append(dimUno,dimS)
                     dimDue = np.append(dimDue,dimL)
                     ratio_array = np.append(ratio_array,ratio)
             else: 
-                dimS=np.nan
-                dimL=np.nan
-                ratio=np.nan
+                dimS= 0
+                dimL= 0
+                ratio= 0
                 dimUno = np.append(dimUno,dimS)
                 dimDue = np.append(dimDue,dimL)
                 ratio_array = np.append(ratio_array,ratio)
@@ -334,9 +334,9 @@ def object_dimension(directory_obj, pixel_size,  lim, area, name_save):
             dimDue = np.append(dimDue,dimL)
             ratio_array = np.append(ratio_array,ratio)
     else:
-        dimS=np.nan
-        dimL=np.nan
-        ratio=np.nan
+        dimS= 0
+        dimL= 0
+        ratio= 0
         dimUno = np.append(dimUno,dimS)
         dimDue = np.append(dimDue,dimL)
         ratio_array = np.append(ratio_array,ratio)
