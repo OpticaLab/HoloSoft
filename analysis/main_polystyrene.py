@@ -30,6 +30,7 @@ parser = argparse.ArgumentParser("Programma Ologrammi")
 parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder Directory")
 parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
 parser.add_argument('-pf','--path_file', required=True, type = str, help='Name file .dat')
+parser.add_argument('-np','--number_path', required=True, type = str, help='Number file path.dat')
 parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standard deviation cut off")
 parser.add_argument('-msk', '--mask_tresh', required=True, type=float, help="Mask treshold")
 parser.add_argument('-r', '--ray', required=True, type=int, help="Beads ray")
@@ -69,7 +70,7 @@ contatore_mediana = 0
 
 file = args.path_file
 make_the_fold(file)
-name_file = file +'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
+name_file = file + args.number_path+'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
 dati = open(name_file,'w+')
 
 
