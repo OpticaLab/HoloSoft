@@ -310,7 +310,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                         if ratio1 < 1.5:
                                             if (Cext_tw_Integration_Square >1) and (Cext_tw_Integration_Square < x_sec[2]+10):
                                                 print('scritto')  
-                                                print (str(numero)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(dimA1)+' '+str(dimB1)+' '+str(Cext_tw_Integration_Square)+' '+str(Cext_tw_fit)+' '+str(err_c)+' '+str(np.mean(residui))+' '+str(params[0])+' '+str(params[1]),file=dati)
+                                                print (str(numero)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(Cext_tw_Integration_Square)+' '+str(Cext_tw_fit)+' '+str(err_c)+' '+str(np.mean(residui))+' '+str(params[0])+' '+str(params[1]),file=dati)
                                                 
                                             else:
                                                 print("Cext fuori range")
