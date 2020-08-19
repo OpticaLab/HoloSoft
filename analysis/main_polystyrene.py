@@ -70,7 +70,7 @@ contatore_mediana = 0
 
 file = args.path_file
 make_the_fold(file)
-name_file = file + args.number_path+'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
+name_file = file +'/'+ args.number_path+'_'+ args.stack_dir+ ".dat"  #file dove salvo dati
 dati = open(name_file,'w+')
 
 
