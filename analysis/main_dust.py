@@ -98,7 +98,7 @@ Lx = 1024
 Ly = 1280
 N = 1024
 
-for ciclo in np.arange(1,int(len(data_path_list)/end),1):
+for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
     for i in data_path_list[start:end]:
 
         """
@@ -239,7 +239,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
 #                                
                                # prop_plot = plot_bello(holo_cut,illum_wavelen ,medium_index, lim,  integral+str(numero)+'_'+str(j)+"propagation.png" )
                                  
-                                    z = np.linspace(50,550, 100)
+                                    z = np.linspace(100,600, 100)
                                     rec_vol = hp.propagate(holo_cut, z, illum_wavelen = illum_wavelen, medium_index = medium_index)
                                                     
                                     modulo = propagation_module(z, rec_vol,int(lim),int(lim), 5)# int(centro[0]),int(centro[1]),
@@ -303,7 +303,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                         print('delete')
 
                                         os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
-                                        os.remove(graph_centri+'confronto_'+str(i))
+                                        #os.remove(graph_centri+'confronto_'+str(i))
                                         os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                         os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                         os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
@@ -330,7 +330,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(dimA1[1])+' '+str(dimB1[1])+' '+str(dimA1[2])+' '+str(dimB1[2])+str(Cext_tw_Integration_Square),file=dati_3)
     
                                                 except (TypeError,IndexError) as e:
-                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati)
+                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati_3)
                                                 
                                             else:
                                                 print(i)
@@ -339,7 +339,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end),1):
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(dimA1[1])+' '+str(dimB1[1])+' '+str(Cext_tw_Integration_Square),file=dati_2)
                                              
                                                 except (TypeError,IndexError) as e:
-                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati)
+                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati_2)
                                             
                                         else:
                                             print(i)
