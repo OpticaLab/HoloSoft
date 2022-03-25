@@ -18,7 +18,7 @@ from scipy.ndimage import gaussian_filter
 from PIL import Image
 import argparse
 from scipy.ndimage import measurements
-
+from skimage.restoration import unwrap_phase
 from HoloSoft import *
 
 """
@@ -41,11 +41,12 @@ parser.add_argument('-par2', '--par2_deconv', required=True, type=float, help="P
 args = parser.parse_args()
 
 #class args:
-#    folder_dir = "POLISTIRENE/14luglio/12"
-#    stack_dir = "0"
-#    path_file = "DAT_POLISTIRENE/14luglio/12"
+#    folder_dir = "POLI/11"
+#    stack_dir = "1"
+#    path_file = "DAT_POLISTIRENE/14luglio2/11"
+#    number_path = "11"
 #    std_dev = 0.016
-#    msk_tresh = 0.65
+#    mask_tresh = 0.6
 #    ray = 1
 #    par1_deconv = 0.0509
 #    par2_deconv = 0.00090
@@ -80,7 +81,7 @@ dati = open(name_file,'w+')
 
 "Image caracteristics"
 medium_index = 1.33
-pixel_size = 0.2596 # pix_size is given in um
+pixel_size = 0.2625 # pix_size is given in um #0.262 troppo basso, 0.265 troppo alto
 illum_wavelen = 0.6328
 illum_polarization =(0,1)
 k=np.pi*2/(illum_wavelen/medium_index)
@@ -145,6 +146,8 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                             """
                             center_x = coordinates[j][0]
                             center_y = coordinates[j][1]
+                            center_y_orig = center_y
+                            center_x_orig = center_x
         
                             lim =500
                             lim1=500
@@ -160,22 +163,24 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                 data_holo = data_holo -1
                                 holo_cut = data_holo[:,int(center_x-lim) : int(center_x+lim), int(center_y-lim) : int(center_y+lim)] #taglio img
 
-                                centri_correct = center_find(holo_cut, centers=1, threshold=0.5, blursize=3.0)  #trovo i centri in modo più preciso e taglio di nuovo
-                                center_x = centri_correct[0]
-                                center_y = centri_correct[1]
-                                
-                                lim_nuovo = lim
-                                lim1 = lim
-                                lim2 = lim
-                                lim_nuovo = find_the_new_lim(center_x, center_y, lim_nuovo,lim1,lim2, lim*2)
-                                lim = lim_nuovo
-                                
-                                holo_cut = holo_cut[:,int(center_x-lim) : int(center_x+lim), int(center_y-lim) : int(center_y+lim)]
-                                
+# =============================================================================
+#                                 centri_correct = center_find(holo_cut, centers=1, threshold=0.5, blursize=3.0)  #trovo i centri in modo più preciso e taglio di nuovo
+#                                 center_x = centri_correct[0]
+#                                 center_y = centri_correct[1]
+#                                 
+#                                 lim_nuovo = lim
+#                                 lim1 = lim
+#                                 lim2 = lim
+#                                 lim_nuovo = find_the_new_lim(center_x, center_y, lim_nuovo,lim1,lim2, lim*2)
+#                                 lim = lim_nuovo
+#                                 
+#                                 holo_cut = holo_cut[:,int(center_x-lim) : int(center_x+lim), int(center_y-lim) : int(center_y+lim)]
+#                                 
+# =============================================================================
                                 if len(holo_cut[0,:,:]) % 2 == 0: #img deve essere di pixel dispari
 #                                    lim = lim-0.5
-                                    holo_cut = holo_cut[:,int(lim-lim+1) : int(lim+lim), int(lim-lim+1) : int(lim+lim)]
-                                    lim = len(holo_cut[0,:,:])/2                                
+                                    holo_cut_disp = holo_cut[:,int(lim-lim+1) : int(lim+lim), int(lim-lim+1) : int(lim+lim)]
+                                    lim_disp = len(holo_cut_disp[0,:,:])/2                                
                                 
                                 
                                 if np.shape(holo_cut)[1]>200 and np.shape(holo_cut)[2]>200:
@@ -207,11 +212,11 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                     plt.close()
 #                                    
 #                                    
-                                    holo =holo_cut[0,:,:]-np.mean(holo_cut).values
-                                    R , A= matrix_R(int(lim*2), pixel_size)
-                                    Integrale_circle, media = media_angolare(R, holo, pixel_size,int(lim))
-                                    freq = (R[int(lim)][int(lim)+1]-R[int(lim)][int(lim)])
-                                    x_fit_1 = np.arange(freq, R[int(lim)][0]+freq,freq)
+                                    holo = holo_cut_disp[0,:,:]-np.mean(holo_cut_disp).values
+                                    R , A= matrix_R(int(lim_disp*2), pixel_size)
+                                    Integrale_circle, media = media_angolare(R, holo, pixel_size,int(lim_disp))
+                                    freq = (R[int(lim_disp)][int(lim_disp)+1]-R[int(lim_disp)][int(lim_disp)])
+                                    x_fit_1 = np.arange(freq, R[int(lim_disp)][0]+freq,freq)
 #                                    
 #                                       
                                     """
@@ -219,7 +224,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
     
                                     """
                                     
-                                    Integration_square = Integration_tw_square(holo, lim, pixel_size)                                   
+                                    Integration_square = Integration_tw_square(holo, lim_disp, pixel_size)                                   
                                     Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, raggio, integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf","poli")
                                     print('Cext Integrale=', Cext_tw_Integration_Square)
 #                                
@@ -229,8 +234,9 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                 
                                     """
 #                                
-                                    # prop_plot = plot_bello(holo_cut,illum_wavelen ,medium_index, lim,  integral+str(numero)+'_'+str(j)+"propagation.png" )
-                                 
+                                    
+                                    holo_cut = holo_cut +1
+                                    
                                     z = np.linspace(200,700, 100)
                                     rec_vol = hp.propagate(holo_cut, z, illum_wavelen = illum_wavelen, medium_index = medium_index)
                                                 
@@ -241,25 +247,40 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                     onda_riferimento = np.angle(np.e**((-1j*2*np.pi*z/(illum_wavelen/medium_index)))) 
                                     fase, only_p, only_phase= propagation_phase(phase, onda_riferimento, z, int(lim),int(lim), 1 ) #int(centro[0]),int(centro[1])
                                                 
-                                    fase = np.nan_to_num(fase)
+                                    
                                     max_d, min_d, max_zarray, min_zarray = maximum_minimum(fase, z)
 #               
                                     plot_twin_propagation( z, modulo, fase, integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                     
-                                    picchi = argrelextrema(gaussian_filter(modulo[20:75], sigma =3),np.greater)
+                                    fase[np.isnan(fase)] = 0
+               
+                                    fase[fase>np.pi]  = fase[fase>np.pi] -2*np.pi
+                                    fase[fase<-np.pi]  = fase[fase<-np.pi] +2*np.pi
+                                    
+#                                   
+                                    maxi = np.where(fase == np.amax(fase))[0][0]
+                                    mini = np.where(fase ==np.amin(fase))[0][0]
+#                                    
+#                                    fuoco_fase = maxi 
+                                    
+                                    picchi = argrelextrema(gaussian_filter(modulo[20:70], sigma =3),np.less)
                                    
                                     picchi = picchi[0]
                                     for p in np.arange(0, len(picchi),1):
-                                        if modulo[picchi[p]]<0.03:
+                                        if modulo[picchi[p]]>0.8:
                                             picchi[p]=9999
                                     picchi = picchi[picchi != 9999]
                                    
                                     if  len(picchi) >1:
                                         fuoco = int(abs((picchi[0]-picchi[1]))/2 + picchi[0]) +20
                                     else :
-                                        fuoco =max_zarray_modulo[0]
+                                        fuoco =min_zarray_modulo[0]
                                                           
-                                                                               
+                                    fuoco_fase = maxi
+                                    
+                                    if np.abs(fuoco_fase - fuoco) > 8:
+                                        fuoco_fase = fuoco
+
                                     obj= np.abs(rec_vol[:,:,fuoco])
                                     plt.plot(np.arange(124,129+8,0.5),np.ones(len(np.arange(0,13,0.5)))*10,'-w', linewidth=5)
                                     plt.text(124,7, r'2$\mu m$', {'color': 'w', 'fontsize': 12})
@@ -270,10 +291,10 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                     plt.clf()
                                     plt.close()
                                 
-                                    obj=gaussian_filter(obj, sigma=2) #per 2um 1
+                                    obj=gaussian_filter(obj, sigma=1) #per 2um 1
                                                 #                                       
                                     obj= obj/np.amax(obj)
-                                    mask= (obj[int(lim)-80:int(lim)+80,int(lim)-80:int(lim)+80]> args.mask_tresh).astype(int) #per 2um 0.65 o 0-67
+                                    mask= (obj[int(lim)-80:int(lim)+80,int(lim)-80:int(lim)+80]< 0.4).astype(int) #per 2um 0.65 o 0-67
                                     lw,num = measurements.label(mask)
                                     area = (measurements.sum(mask, lw, range(num + 1)))*pixel_size*pixel_size
                                     mask = mask*255
@@ -284,14 +305,57 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                     dimA1, dimB1, ratio1 = object_dimension(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff", pixel_size, int(lim), area, integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                 
                                     print('area=',area)
-                                
+                                    
+                                    phase = phase[lim-50:lim+50, lim-50:lim+50, :]
+                                    
+                                    lim = 50
+                                    
+                                    onda_piana_tot = np.zeros((100,100))
+                                    for boh in range(0,100):
+                                        onda_piana = phase[:,:,boh] - np.angle(np.e**((-1j*2*np.pi*z[boh]/(illum_wavelen/medium_index))))* np.ones((100,100))
+                                        onda_piana_tot = np.concatenate((onda_piana_tot, onda_piana))
+                                        onda_piana[onda_piana>np.pi] = onda_piana[onda_piana>np.pi] -2*np.pi
+                                        onda_piana[onda_piana<-np.pi] = onda_piana[onda_piana<-np.pi] +2*np.pi
+                                    onda_piana_tot = onda_piana_tot.reshape(((101,100, 100 )))
+                                    onda_correct = onda_piana_tot[1:,:,:]
+                                    
+                                    
+                                    image_unwrapped = unwrap_phase(onda_correct,wrap_around=True,seed=1)
+                                       
+                                    delta_z = (image_unwrapped)*illum_wavelen/(2*np.pi*((1.59-1.33)))
+#                                    print(delta_z)
+                                    
+                                    fig = plt.figure()
+                                    y = np.arange(0, 20, 1)*pixel_size
+                                    x = np.arange(0, 20, 1)*pixel_size
+                                    
+                                    X, Y = np.meshgrid(x, y)
+                                    Z = delta_z[fuoco_fase ,int(lim)-10:int(lim)+10,int(lim)-10:int(lim)+10]
+                                       
+                                    ax = plt.axes(projection='3d')
+                                    ax.contour3D(X, Y, Z, 50, cmap='viridis')
+                                   
+                                    ax.set_xlabel('x (um)')
+                                    ax.set_ylabel('y (um)')
+                                    ax.set_zlabel('z (um)')
+
+                                    plt.savefig(integral+str(numero)+"spex_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                    plt.clf()
+                                    plt.close()
+                                    
+                                    delta = np.amax(Z)
+                                    if np.abs(np.amin(Z)) > np.abs(np.amax(Z)):
+                                        delta = np.amin(Z)
+                                    print(delta)
+ 
                                 
                                     """
                                     --CEXT--FIT
                                         
                                     """
-                                    Cext_tw_fit, err_c, residui, params = Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf",integral+str(numero)+'HoloFit_'+str(j)+'_'+str(os.path.splitext(i)[0]))
-                                    print('Cext Fit=',Cext_tw_fit)
+                                    
+                                    #Cext_tw_fit, err_c, residui, params = Cext_FIT(holo, pixel_size, z, fuoco, lim_disp, k, x_fit_1, media, integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf",integral+str(numero)+'HoloFit_'+str(j)+'_'+str(os.path.splitext(i)[0]))
+                                    #print('Cext Fit=',Cext_tw_fit)
                                     
                                 
                                 
@@ -299,7 +363,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                     --SAVE--DATA
                                         
                                     """
-                                    area_lim_inf = (raggio-0.6)*(raggio-0.6)*np.pi
+                                    area_lim_inf = (raggio-0.8)*(raggio-0.8)*np.pi
                                     area_lim_sup = (raggio+0.6)*(raggio+0.6)*np.pi
                                 
                                     dim_inf = raggio*2 -1
@@ -311,18 +375,110 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                     if (len(area)>1) and (len(area)<3) and (area[1]<area_lim_sup) and (area[1]>area_lim_inf):
                                         if (dimA1 < dim_sup) and (dimA1>dim_inf ) and (dimB1 < dim_sup) and (dimB1>dim_inf):
                                             if ratio1 < 1.5:
-                                                if (Cext_tw_Integration_Square >1) and (Cext_tw_Integration_Square < x_sec[2]+10):
+                                                if (Cext_tw_Integration_Square >1) and (Cext_tw_Integration_Square < x_sec[2]+10): #and (Cext_tw_fit>1) and (Cext_tw_fit< x_sec[2]+10):
                                                     print('scritto')  
-                                                    print (str(numero)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(Cext_tw_Integration_Square)+' '+str(Cext_tw_fit)+' '+str(err_c)+' '+str(np.mean(residui))+' '+str(params[0])+' '+str(params[1]),file=dati)
+                                                    print (str(numero)+' '+str(fuoco)+' '+str(center_x_orig)+' '+str(center_y_orig)+' '+str(area[1])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(Cext_tw_Integration_Square)+' '+str(delta)+' '+str(lim),file=dati)
+                                                    #print (str(numero)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(Cext_tw_Integration_Square),file=dati)
                                                 
                                                 else:
                                                     print("Cext fuori range")
+                                                    print('delete')
+                                                    
+                                                    os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                                    os.remove(graph_centri+'confronto_'+str(numero)+'.pdf')
+                                                    os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                                    os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                                    os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
+                                                    os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+            #                                        
+                                                    try:
+                                                        for k in np.arange(0,10,1):
+                                                               os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf"+"_"+str(k)+".pdf")
+                                                    except FileNotFoundError:
+                                                        print('no obj')
+                                                        
+                                                    try:
+                                                        os.remove(integral+str(numero)+'HoloFit_'+str(j)+'_'+str(os.path.splitext(i)[0])+".png")
+                                                        os.remove(integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                                        
+                                                    except FileNotFoundError:
+                                                        print('no cext') 
+
+#                                                    
                                             else:
                                                 print("ratio fuori range")
+                                                print('delete')
+                                                os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                                os.remove(graph_centri+'confronto_'+str(numero)+'.pdf')
+                                                os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                                os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                                os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
+                                                os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+        #                                        
+                                                try:
+                                                    for k in np.arange(0,10,1):
+                                                         os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf"+"_"+str(k)+".pdf")
+                                                except FileNotFoundError:
+                                                    print('no obj')
+                                                    
+                                                try:
+                                                    os.remove(integral+str(numero)+'HoloFit_'+str(j)+'_'+str(os.path.splitext(i)[0])+".png")
+                                                    os.remove(integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                                    
+                                                except FileNotFoundError:
+                                                    print('no cext') 
+
+#                                               
                                         else :
                                             print("dim fuori range")
+                                            print('delete')
+                                            
+                                            os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(graph_centri+'confronto_'+str(numero)+'.pdf')
+                                            os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
+                                            os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+    #                                        
+                                            try:
+                                                for k in np.arange(0,10,1):
+                                                    os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf"+"_"+str(k)+".pdf")
+                                            except FileNotFoundError:
+                                                print('no obj')
+                                                
+                                            try:
+                                                os.remove(integral+str(numero)+'HoloFit_'+str(j)+'_'+str(os.path.splitext(i)[0])+".png")
+                                                os.remove(integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                                
+                                            except FileNotFoundError:
+                                                print('no cext') 
+
+#                                            
                                     else:
                                         print("area fuori range")
+                                        print('delete')
+
+                                        os.remove(integral+str(numero)+'img_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(graph_centri+'confronto_'+str(numero)+'.pdf')
+                                        os.remove(integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(integral+str(numero)+"modulo_nofilter_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                        os.remove(integral+str(numero)+"mask_"+str(j)+"_"+str(os.path.splitext(i)[0])+".tiff")
+                                        os.remove(integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf")
+#                                        
+                                        try:
+                                            for k in np.arange(0,10,1):
+                                                 os.remove(integral+str(numero)+"obj_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf"+"_"+str(k)+".pdf")
+                                        except FileNotFoundError:
+                                            print('no obj')
+                                            
+                                        try:
+                                            os.remove(integral+str(numero)+'HoloFit_'+str(j)+'_'+str(os.path.splitext(i)[0])+".png")
+                                            os.remove(integral+str(numero)+'cextfit_'+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
+                                            
+                                        except FileNotFoundError:
+                                            print('no cext') 
+                                        
+
                    
                                                    
         numero =numero+1                                  

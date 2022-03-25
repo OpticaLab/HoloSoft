@@ -89,7 +89,7 @@ dati_3 = open(name_file_3,'w+')
 
 "Image caracteristics"
 medium_index = 1.33
-pixel_size = 0.2596 # pix_size is given in um
+pixel_size = 0.2625 #0.2596 # pix_size is given in um
 illum_wavelen = 0.6328
 illum_polarization =(0,1)
 k=np.pi*2/(illum_wavelen/medium_index)
@@ -109,7 +109,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
         bg_holo = hp.load_image(bg_path + bg_path_list[contatore_mediana], spacing = pixel_size,medium_index =medium_index ,illum_wavelen=illum_wavelen, illum_polarization=illum_polarization)
         data_holo = raw_holo / (bg_holo)
         
-        print(i)
+        print(i, bg_path_list[contatore_mediana])
 
         graph_centri = sample+cartella+'riconoscimento_centri/'
         integral =sample+cartella+'integral/'
@@ -128,7 +128,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
         centri = filter_deconv(N, center_holo, pixel_size, args.par1_deconv, args.par2_deconv ) 
         centri = centri/np.amax(centri)
         image_max = ndi.maximum_filter(centri, size=50, mode='constant')
-        coordinates = peak_local_max(centri, min_distance=200, threshold_abs=t)
+        coordinates = peak_local_max(centri, min_distance=50, threshold_abs=t)
         
         
         """
@@ -138,12 +138,15 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
         Elimino le immagini senza centri
         """
     
-        if np.shape(coordinates)[0]<6:  #se sono troppe coordinate: o troppi ologrammi o immagine rumorosa
+        if np.shape(coordinates)[0]<5:  #se sono troppe coordinate: o troppi ologrammi o immagine rumorosa
             
             if np.shape(coordinates)[0]>0: #deve almeno trovarne una
                 st = np.std(data_holo)
                 if st >= args.std_dev: 
                     img = center_holo
+                    
+                    if (np.shape(coordinates)[0]>1) and (coordinates[0][0] - coordinates[1][0]<100 or coordinates[0][1] - coordinates[1][1]<100):
+                        coordinates = np.array([coordinates[0]])
                         
                     for j in np.arange(0,len(coordinates),1): #ciclo sulle coordinate
                         
@@ -239,7 +242,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
 #                                
                                # prop_plot = plot_bello(holo_cut,illum_wavelen ,medium_index, lim,  integral+str(numero)+'_'+str(j)+"propagation.png" )
                                  
-                                    z = np.linspace(100,600, 100)
+                                    z = np.linspace(100,650, 150) #np.linspace(100,600, 100)
                                     rec_vol = hp.propagate(holo_cut, z, illum_wavelen = illum_wavelen, medium_index = medium_index)
                                                     
                                     modulo = propagation_module(z, rec_vol,int(lim),int(lim), 5)# int(centro[0]),int(centro[1]),
@@ -254,24 +257,31 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
 #               
                                     plot_twin_propagation( z, modulo, fase, integral+str(numero)+"propagation_"+str(j)+"_"+str(os.path.splitext(i)[0])+".pdf")
                                     
-                                    picchi = argrelextrema(gaussian_filter(modulo[10:90], sigma =2),np.greater)#75#47
-                                   
+                                    picchi = argrelextrema(gaussian_filter(modulo, sigma =2),np.greater)#75#47
+#                                    plt.plot(gaussian_filter(modulo[3:197], sigma =2))
                                     picchi = picchi[0]
                                     for p in np.arange(0, len(picchi),1):
-                                        if modulo[10:90][picchi[p]]<0.4*np.amax(modulo[10:90]):
+                                        if modulo[picchi[p]]<0.45*np.amax(modulo):
                                             picchi[p]=9999
                                     picchi = picchi[picchi != 9999]
                                    
                                     if  len(picchi) >1:
-                                        fuoco = int(abs((picchi[0]-picchi[1]))/2 + picchi[0]) +10
+                                        fuoco = int(abs((picchi[0]-picchi[1]))/2 + picchi[0]) 
+                                        
+                                        if len(picchi) >2:
+                                           if abs(picchi[0]-picchi[1]) < 20:
+                                               fuoco = int(abs((picchi[1]-picchi[2]))/2 + picchi[1]) 
+                                           else:
+                                               fuoco = int(abs((picchi[0]-picchi[1]))/2 + picchi[0]) 
                                     else :
-                                        fuoco =max_zarray_modulo[0]
+                                        fuoco =max_zarray_modulo[0] 
                                                           
                                 #print(picchi, fuoco)
                                 
                                     obj= np.abs(rec_vol[:,:,fuoco])
-                                    plt.plot(np.arange(124,129+8,0.5),np.ones(len(np.arange(0,13,0.5)))*10,'-w', linewidth=5)
-                                    plt.text(124,7, r'2$\mu m$', {'color': 'w', 'fontsize': 12})
+                                    lenx =np.arange(132,139.7,0.5)
+                                    plt.plot(lenx,np.ones(len(lenx))*20,'-w', linewidth=5)
+                                    plt.text(124,15, r'2$\mu m$', {'color': 'w', 'fontsize': 12})
                                     plt.imshow(obj[int(lim)-80:int(lim)+80,int(lim)-80:int(lim)+80],cmap='gray')
                                     plt.colorbar()
                                     plt.axis('off')
@@ -327,7 +337,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                                 print(i)
                                                 print('scritto')  
                                                 try :
-                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(dimA1[1])+' '+str(dimB1[1])+' '+str(dimA1[2])+' '+str(dimB1[2])+str(Cext_tw_Integration_Square),file=dati_3)
+                                                    print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(dimA1[1])+' '+str(dimB1[1])+' '+str(dimA1[2])+' '+str(dimB1[2])+' '+str(Cext_tw_Integration_Square),file=dati_3)
     
                                                 except (TypeError,IndexError) as e:
                                                     print (str(i)+' '+str(fuoco)+' '+str(center_x)+' '+str(center_y)+' '+str(area[1])+' '+str(area[2])+' '+str(area[3])+' '+str(dimA1[0])+' '+str(dimB1[0])+'  '+str(Cext_tw_Integration_Square),file=dati_3)

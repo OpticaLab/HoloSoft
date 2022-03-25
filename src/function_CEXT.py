@@ -128,8 +128,7 @@ def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph_3d, 
 
     def func_hologram_2d(xy_mesh, S, P, sigma, A, zeta):
         (x, y) = xy_mesh
-        g = (A+2*(S)/(k*zeta) * np.cos((k/(2*zeta))*((x-xo)**2 + (y-yo)
-                                                     ** 2) + P))*np.exp(-((x-xo)**2+(y-yo)**2)/(2*sigma**2))
+        g = (A+2*(S)/(k*zeta) * np.cos((k/(2*zeta))*((x-xo)**2 + (y-yo)** 2) + P))*np.exp(-((x-xo)**2+(y-yo)**2)/(2*sigma**2))
 
         return g.ravel()
 
@@ -140,14 +139,15 @@ def Cext_FIT(holo, pixel_size, z, fuoco, lim, k, x_fit_1, media, name_graph_3d, 
     xo = lim*pixel_size
     yo = lim*pixel_size
     A = 0.2
+    
 
     srot_holo = np.array([])
     for i_img in np.arange(0, len(holo.values)):
         srot_holo = np.append(srot_holo, holo[i_img].values)
 
     try:
-        params, params_covariance = optimize.curve_fit(
-            func_hologram_2d, (x_f, y_f), srot_holo, p0=[S, P, sigma, A, zeta])
+        params, params_covariance = optimize.curve_fit(func_hologram_2d, (x_f, y_f), srot_holo, p0=[S, P, sigma, A, zeta])
+
         data_fitted = func_hologram_2d((x_f, y_f), *params)
         perr = np.sqrt(np.diag(params_covariance))
         err_S = perr[0]
@@ -232,12 +232,12 @@ def Integration_tw_square(holo, lim, pixel_size):
     Integrale_array = np.array([])
     for r in np.arange(0, int(lim), 1):
         Integrale = np.sum(
-            holo[int(lim-r):int(lim+r), int(lim-r):int(lim+r)])*pixel_size**2
+            holo[int(lim-r):int(lim+r+1), int(lim-r):int(lim+r+1)])*pixel_size**2
         Integrale_array = np.append(Integrale_array, Integrale)
     return Integrale_array
 
 
-def Cext_tw_integration(Integrale_array, raggio, name_graph, dati):
+def Cext_tw_integration(medium_index, illum_wavelen, illum_polarization, Integrale_array, raggio, name_graph, dati, x_sec):
     """
     Plot of the integration of the hologram. 
     By this you can have 
@@ -260,24 +260,15 @@ def Cext_tw_integration(Integrale_array, raggio, name_graph, dati):
     y[0]: (float)
         Value of the Cext
     """
-    medium_index = 1.33
-    illum_wavelen = 0.6328
-    illum_polarization = (0, 1)
-
     Integrale_array = -Integrale_array[:]
     x = np.arange(0, len(Integrale_array), 1)
 
-    if dati == 'poli':
-        distant_sphere = Sphere(r=raggio, n=1.59)
-        x_sec = calc_cross_sections(
-            distant_sphere, medium_index, illum_wavelen, illum_polarization)
-   # x1=np.arange(0,numero_linea,1)
-
+ 
     inviluppo_sup = argrelextrema(Integrale_array[:], np.greater)[0]
     inviluppo_min = argrelextrema(Integrale_array[:], np.less)[0]
 
-    inviluppo_min = inviluppo_min[inviluppo_min > 50]
-    inviluppo_sup = inviluppo_sup[inviluppo_sup > 20]
+    inviluppo_min = inviluppo_min[inviluppo_min > 45]
+    inviluppo_sup = inviluppo_sup[inviluppo_sup > 35]
 
     if len(inviluppo_sup) > 0 and len(inviluppo_min) > 0:
         if len(inviluppo_sup) > len(inviluppo_min):
@@ -292,7 +283,7 @@ def Cext_tw_integration(Integrale_array, raggio, name_graph, dati):
             x2 = inviluppo_sup
             y = ((Integrale_array[inviluppo_sup] -
                   Integrale_array[inviluppo_min])/2+Integrale_array[inviluppo_min])
-
+        
         x1 = np.arange(5, inviluppo_sup[0]-10, 1)
         x3 = np.arange(5, inviluppo_sup[0]-10, 1)
         y2 = np.ones(len(x3))*((Integrale_array[inviluppo_sup[0]] -
@@ -306,13 +297,17 @@ def Cext_tw_integration(Integrale_array, raggio, name_graph, dati):
                      x_sec[2].values, '<--g', label='Cext Expected')
 
         plt.plot(
-            inviluppo_sup, Integrale_array[inviluppo_sup], '-.k', linewidth=1.5, label='Envolepe')
+            inviluppo_sup, Integrale_array[inviluppo_sup], '-.k', linewidth=1.5, label='Envelope')
         plt.plot(inviluppo_min,
                  Integrale_array[inviluppo_min], '-.k', linewidth=1.5)
         plt.plot(x3, y2, '<--r', label='Cext Obtained')
-        plt.plot(x2, y, '--r', linewidth=2)
-
-        plt.title('Cext = {:.2f}'.format(y[0]))
+        plt.plot(x2, y, '--.r', linewidth=2)
+        
+        
+        if len(y)>5:
+            plt.title('Cext = {:.2f}'.format(y[0])+' ,'+'{:.2f}'.format(y[1])+' ,'+'{:.2f}'.format(y[5]))
+        else:
+            plt.title('Cext = {:.2f}'.format(y[0]))
         plt.xlabel('x (pixel)', fontsize=20)
         plt.ylabel('Integration ($\mu m^2$)', fontsize=20)
         plt.legend(fontsize=18)
@@ -323,5 +318,7 @@ def Cext_tw_integration(Integrale_array, raggio, name_graph, dati):
 
     else:
         y = np.array([0])
+        x2 = np.array([0])
+        y = np.array([0])
 
-    return y[0]
+    return (y[0], x2, y) 

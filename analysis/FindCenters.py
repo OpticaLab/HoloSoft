@@ -10,23 +10,23 @@ from skimage.feature import peak_local_max
 import argparse
 from HoloSoft import *
 
-parser = argparse.ArgumentParser("Find Centers")
-parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder Directory")
-parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
-parser.add_argument('-im','--image_name', required=True, type=str, help="Image name")
-parser.add_argument('-med','--median_name', required=True, type=str, help="Median name")
-parser.add_argument('-par1', '--par1_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
-parser.add_argument('-par2', '--par2_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
+# parser = argparse.ArgumentParser("Find Centers")
+# parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder Directory")
+# parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
+# parser.add_argument('-im','--image_name', required=True, type=str, help="Image name")
+# parser.add_argument('-med','--median_name', required=True, type=str, help="Median name")
+# parser.add_argument('-par1', '--par1_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
+# parser.add_argument('-par2', '--par2_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
 
-args = parser.parse_args()
+# args = parser.parse_args()
 
-#class args:
-#    folder_dir = "RICE/135/"
-#    stack_dir = "1/2/"
-#    image_name = "IMG_0041.tiff"
-#    median_name = "median_20_40.tiff"
-#    par1_deconv = 0.0509
-#    par2_deconv = 0.00090
+class args:
+    folder_dir = "rice/371/"
+    stack_dir = "2/1/"
+    image_name = "IMG_0057.tiff"
+    median_name = "median_0050_0060.tiff"
+    par1_deconv = 0.0509
+    par2_deconv = 0.00090
 
 
 medium_index = 1.33
@@ -55,8 +55,8 @@ data_holo = data_holo -1
 t = 0.3
 centri = filter_deconv(N, data_holo, pixel_size, args.par1_deconv, args.par2_deconv) 
 centri = centri/np.amax(centri)
-image_max = ndi.maximum_filter(centri, size=50, mode='constant')
-coordinates = peak_local_max(centri, min_distance=200, threshold_abs=t)
+image_max = ndi.maximum_filter(centri, size=100, mode='constant')
+coordinates = peak_local_max(centri, min_distance=50, threshold_abs=t)
        
 fig, axes = plt.subplots(1, 3, figsize=(10, 5), sharex=True, sharey=True)
 ax = axes.ravel()

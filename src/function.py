@@ -107,7 +107,7 @@ def calcolo_hologram_BINNING(cartella, name, pixel_size, lim, binsize, pixcombin
     return data_holo
     
     
-def find_the_new_lim(center_x, center_y, lim, lim1, lim2, N):
+def find_the_new_lim(center_x, center_y, lim, lim1, lim2, Lx, Ly):
     """[summary]
 
     Args:
@@ -133,12 +133,12 @@ def find_the_new_lim(center_x, center_y, lim, lim1, lim2, N):
     if center_x < center_y:
         if center_x - lim < 0:
             lim1 = int(center_x)
-        if center_x + lim > N:
-            lim1 = int(N - center_x)
+        if center_x + lim > Lx:
+            lim1 = int(Lx - center_x)
         if center_y - lim < 0:
             lim2 = int(center_y)
-        if center_y + lim > N:
-            lim2 = int(N - center_y)
+        if center_y + lim > Ly:
+            lim2 = int(Ly - center_y)
                                     
         if lim1 < lim2:
             lim = lim1
@@ -148,12 +148,12 @@ def find_the_new_lim(center_x, center_y, lim, lim1, lim2, N):
     else:
         if center_x - lim < 0:
             lim1 = int(center_x)
-        if center_x + lim >N:
-            lim1 = int(N - center_x)
+        if center_x + lim > Lx:
+            lim1 = int(Lx - center_x)
         if center_y - lim < 0:
             lim2 = int(center_y)
-        if center_y + lim > N:
-            lim2 = int(N- center_y)
+        if center_y + lim > Ly:
+            lim2 = int(Ly- center_y)
         
         if lim1 < lim2:
             lim = lim1

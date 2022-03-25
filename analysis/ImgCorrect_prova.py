@@ -27,19 +27,22 @@ parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standar
 
 args = parser.parse_args()
 
-# class args:
-#     folder_dir = "RICE/1"
-#     stack_dir = "1"
+#class args:
+#     folder_dir = "AGO/52/prova/1"
+#     stack_dir = "3"
 #     save_img = True
 #     delete_img = True
-#     std_dev = 0.0138
+#     std_dev = 0.0154
 
 
 sample = args.folder_dir + "/" + args.stack_dir+"/dati/"
 path_list = os.listdir(sample)
+path_list.sort()
 
 img_list = os.listdir(sample)
 img_list.sort()
+
+img_list = img_list[len(img_list)-100:]
 
 directory_save_bg = args.folder_dir + "/" + args.stack_dir+"/mediana"
 directory_save_correct = args.folder_dir + "/" + args.stack_dir+"/img_correct"
@@ -56,11 +59,14 @@ if args.save_img:
         os.makedirs(directory_save_correct)
 
 
+start_nome = 400
+end_nome = 420
+
 start = 0
 end = 20
 std_array = np.array([])
 
-for i in np.arange(0, int(len(path_list)/end), 1):
+for i in np.arange(0, 100,20):
     I_array = []
 
     for k in range(start, end):
@@ -69,14 +75,13 @@ for i in np.arange(0, int(len(path_list)/end), 1):
     img_median = np.median(I_array, axis=0)
     result = Image.fromarray(img_median.astype('uint8'))
     result.save(directory_save_bg+'/median_' +
-                format(start, "04")+'_'+format(end, "04")+'.tiff')
+                format(start_nome, "04")+'_'+format(end_nome, "04")+'.tiff')
 
     std_array = np.array([])
     for j in range(start, end):
         im = Image.open(sample + img_list[j]).convert("L")
         I = np.asarray(im)
         I_correct = (I)/(img_median)
-        
         st = np.std(I_correct)
         std_array = np.append(std_array, st)
 
@@ -90,8 +95,11 @@ for i in np.arange(0, int(len(path_list)/end), 1):
             for m in range(start, end):
                 os.remove(sample + img_list[m])
             os.remove(directory_save_bg+'/median_' +
-                      format(start, "04")+'_'+format(end, "04")+'.tiff')
+                      format(start_nome, "04")+'_'+format(end_nome, "04")+'.tiff')
             print("la media è stata cancellata")
 
     start = start + 20
     end = end + 20
+    
+    start_nome = start_nome + 20
+    end_nome = end_nome + 20
