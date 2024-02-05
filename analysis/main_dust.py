@@ -30,43 +30,54 @@ parser.add_argument('-fd','--folder_dir', required=True, type=str, help="Folder 
 parser.add_argument('-sd','--stack_dir', required=True, type=str, help="Working Stack Directory")
 parser.add_argument('-pf','--path_file', required=True, type = str, help='Name file path.dat')
 parser.add_argument('-np','--number_path', required=True, type = str, help='Number file path.dat')
+parser.add_argument('-wvl', '--laser_wvl', required=True, type=float, help="wvl of laser")
+parser.add_argument('-pix', '--pixel_size', required=True, type=float, help="Pixel size")
+parser.add_argument('-interval', '--interval', required=True, type=int, help="Interval bg")
 parser.add_argument('-st', '--std_dev', required=True, type=float, help="Standard deviation cut off")
+parser.add_argument('-lim', '--lim_img', required=True, type=float, help="Shape cut image")
+parser.add_argument('-zeta', '--prop_z', required=True, type=int, help="Start range for propagation in z")
 parser.add_argument('-msk', '--mask_tresh', required=True, type=float, help="Mask treshold")
 parser.add_argument('-par1', '--par1_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
 parser.add_argument('-par2', '--par2_deconv', required=True, type=float, help="Parameter for the filter deconvolution func.")
+parser.add_argument('-dimx', '--dim_img_x', required=True, type=int, help="X-dimension of raw image")
+parser.add_argument('-dimy', '--dim_img_y', required=True, type=int, help="Y-dimension of raw image")
+parser.add_argument('-sample', '--sample_name', required=True, type=str, help="Polystyrene or not")
+parser.add_argument('-sample2', '--sample_name2', required=True, type=str, help="Two type of find centers")
+parser.add_argument('-ray', '--ray', required=True, type=float, help="Ray polystyrene, if not ray = 0")
+parser.add_argument('-area', '--area_max', required=True, type=int, help="Area max threshold for save")
+parser.add_argument('-cext', '--cext_min', required=True, type=float, help="Cext min threshold for save")
 
 
 args = parser.parse_args()
 
 #class args:
-#    folder_dir = "RICE/135"
-#    stack_dir = "1"
+#    folder_dir = ""
+#    stack_dir = ""
 #    end = 20
-#    path_file = "DAT_RICE/135"
-#    numero_path = "1"
-#    std_dev = 0.015
-#    msk_tresh = 0.65
-#    par1_deconv = 0.0509
-#    par2_deconv = 0.00090
+#    path_file = ""
+#    number_path = ""
+#    std_dev = 
+#    msk_tresh = 
+#    par1_deconv = 
+#    par2_deconv = 
 
 
-cartella = args.stack_dir +"/"
+fold = args.stack_dir +"/"
 sample =  args.folder_dir + "/"
 sample_name= args.folder_dir+"_"+args.stack_dir
 
-data_path = sample+cartella+"dati/"
+data_path = sample+fold+"dati/"
 data_path_list= os.listdir(data_path)
 data_path_list.sort()
 
-bg_path = sample + cartella + "mediana/"
+bg_path = sample + fold + "bg/"
 bg_path_list = os.listdir(bg_path)
 bg_path_list.sort()
 
-start =0
-end = 20 #0-20 intervallo della mediana
-contatore_mediana = 0
-numero = 1 #controllo sul numero di ologrammi
-raggio = 0
+cont_bg = 0
+cont_data = 0
+numero = 1 #check numbers holograms
+ray =  args.ray
 
 file1 = args.path_file + 'singole/'
 file2 = args.path_file + 'doppie/'
@@ -106,13 +117,13 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
         """
         
         raw_holo = hp.load_image(data_path + i, spacing = pixel_size,medium_index =medium_index ,illum_wavelen=illum_wavelen, illum_polarization=illum_polarization)
-        bg_holo = hp.load_image(bg_path + bg_path_list[contatore_mediana], spacing = pixel_size,medium_index =medium_index ,illum_wavelen=illum_wavelen, illum_polarization=illum_polarization)
+        bg_holo = hp.load_image(bg_path + bg_path_list[cont_bg], spacing = pixel_size,medium_index =medium_index ,illum_wavelen=illum_wavelen, illum_polarization=illum_polarization)
         data_holo = raw_holo / (bg_holo)
         
-        print(i, bg_path_list[contatore_mediana])
+        print(i, bg_path_list[cont_bg])
 
-        graph_centri = sample+cartella+'riconoscimento_centri/'
-        integral =sample+cartella+'integral/'
+        graph_centri = sample+fold+'riconoscimento_centri/'
+        integral =sample+fold+'integral/'
         make_the_fold(graph_centri)
         make_the_fold(integral)
         
@@ -230,7 +241,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
                                     """
                                     
                                     Integration_square = Integration_tw_square(holo, lim, pixel_size)                                   
-                                    Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, raggio, integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf", "rice")
+                                    Cext_tw_Integration_Square = Cext_tw_integration(Integration_square, ray, integral+str(numero)+'cext_'+str(j)+'_'+str(os.path.splitext(i)[0])+".pdf", "rice")
                                     print('Cext Integrale=', Cext_tw_Integration_Square)
 #                                    
                                    
@@ -363,7 +374,7 @@ for ciclo in np.arange(1,int(len(data_path_list)/end)+1,1):
         numero =numero+1                                  
     start = start +20 
     end = end +20  
-    contatore_mediana = contatore_mediana +1
+    cont_bg = cont_bg +1
 #
 dati.close() 
 dati_2.close()
