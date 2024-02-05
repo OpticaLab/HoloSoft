@@ -3,25 +3,8 @@
 
 import sys
 import os
-import matplotlib
-from pylab import *
-from scipy.ndimage import measurements
-from PIL import Image
 import numpy as np
-import numpy.ma as ma
-import matplotlib.pyplot as plt
-from PIL import ImageStat
 import holopy as hp
-from holopy.core.process import bg_correct, subimage, normalize,center_find
-import cv2
-import imutils
-from scipy.spatial import distance as dist
-from imutils import perspective
-from imutils import contours
-from scipy.sparse import csgraph
-from matplotlib.offsetbox import AnchoredText
-import time
-
 
 def rebin(a, shape, pixcombine):
     """
@@ -37,7 +20,7 @@ def rebin(a, shape, pixcombine):
     shape (int, int):
         New size of array
     pixcombine (str):
-        The method to combine the pixels with. Choices are sum, mean and median
+        The method to combine the pixels. Choices are sum, mean and median
         
     Returns
     ------------------------------------------------------
@@ -55,57 +38,6 @@ def rebin(a, shape, pixcombine):
     return reshaped_array
         
 
-def calcolo_hologram_BINNING(cartella, name, pixel_size, lim, binsize, pixcombine):
-    """
-    Open the image with the correspective path, it calculates the center of the
-    hologram and it prints it on the console.
-    Then cut the image with a fixed dimension around the center. So the new 
-    center of the image is fixed.
-    Finally it rebins the image.
-    
-    Warning: to find the center you have to open the image with holopy function.
-    But you can't rebbined DataArray. So you had to open it also with PIL.
-    !!!!Maybe you can correct this in a second time!!!!
-    
-    Args
-    ------------------------------------------------------
-    cartella (str):
-        Name of the folder of the image
-    name (str):
-        Number within the name of the image (without type)
-    pixel_size (float):
-        Value of the pixel size (um)
-    lim (int):
-        Value of the half shape of the new matrix. It will be the new center
-    binsize (int):
-        Value of the new reshape
-    pixcombine (str):
-        The method to combine the pixels with. Choices are sum, mean and median
-        
-    Returns
-    ------------------------------------------------------
-    data_holo (:class:`.Image` or :class:`.VectorGrid`):
-        Data reshaped of the hologram
-    """
-    raw_holo = hp.load_image("../Campioni/Flusso/"+cartella+"/img_correct/img_" + name + ".tiff", spacing = pixel_size)  
-    hp.show(raw_holo)
-    plt.show()
-    
-    im = Image.open("../Campioni/Flusso/"+cartella+"/img_correct/img_" + name + ".tiff").convert("L")
-    I  = np.asarray(im)
-    
-    centro = center_find(raw_holo, centers=1, threshold=0.3, blursize=6.0)
-    print(centro)
-    data_holo = I[int(centro[0]-lim) : int(centro[0]+lim), int(centro[1]-lim) : int(centro[1]+lim)]
-    
-    data_holo = rebin(data_holo, ((binsize, binsize)), pixcombine)
-    lim = lim/2
-    
-    hp.show(data_holo)
-    plt.show()
-    
-    return data_holo
-    
     
 def find_the_new_lim(center_x, center_y, lim, lim1, lim2, Lx, Ly):
     """[summary]
@@ -162,7 +94,7 @@ def find_the_new_lim(center_x, center_y, lim, lim1, lim2, Lx, Ly):
     return lim
     
     
-def make_the_fold(nome_cartella):
+def make_the_fold(name_fold):
     """
     Make a non-existing fold
 
@@ -176,7 +108,7 @@ def make_the_fold(nome_cartella):
     0
     """     
     try: 
-        os.stat(nome_cartella) 
+        os.stat(name_fold) 
     except: 
-        os.makedirs(nome_cartella)
+        os.makedirs(name_fold)
     return 0
