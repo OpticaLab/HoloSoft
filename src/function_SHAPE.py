@@ -90,8 +90,8 @@ def propagation_phase(phase, p, z, limx, limy, num):
 
         p_arr = np.append(p_arr, p[j])
 
-        phase_arr[phase_arr > 3] = 0
-        phase_arr[phase_arr < -3] = 0
+        phase_arr[phase_arr > np.pi] = 0
+        phase_arr[phase_arr < -np.pi] = 0
 
     return phase_arr, p_arr, only_phase
 
@@ -170,29 +170,6 @@ def plot_twin_propagation(z, module_arr, phase_arr, directory_graph):
     return 0
 
 
-# def treshold(z, phase, p):
-#     """
-#     Calculates the phase of the hologram, with the respect of the reference
-#     wave, at the initial position of the particle.
-
-#     Args
-#     -------------------------------------------------------
-#     z: (int)
-#         Position of the particle object
-#     phase: (float or list of floats)
-#         Array of the phase of the field propagated
-#     p: (float or list of floats)
-#         Reference wave, that hasn't scattered
-
-#     Returns
-#     -------------------------------------------------------
-#     diff: (:class:`.Image` or :class:`.VectorGrid`)
-#         Matrix of the phase hologram at the plane of the focus (object position)
-#     """
-#     p = p[z] * np.ones((int(len(phase/2)),int(len(phase/2))))
-#     diff=phase[:,:,z] -p
-#     return diff
-
 
 def midpoint(ptA, ptB):
     """
@@ -212,13 +189,13 @@ def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
 
-def object_dimension(directory_obj, pixel_size,  lim, area, name_save):
+def object_dimension(directory_obj, pixel_size,  lim, area, dim, name_save):
     """
-    Calculates the diameters of an object, not circular.
+    Calculates the diameter of an object, spherical-shaped or not.
 
     It first performs edge detection, then performs a dilation + erosion to
-    close gaps in between object edges.
-    Then for each object in the image, it calcaluates the contourns of the
+    close gaps between object edges.
+    Then for each object in the image, it calcalutes the contourns of the
     minimum box (minimum rectangle that circumvent the object) and it sorts
     them from left-to-right (allowing us to extract our reference object).
     It unpacks the ordered bounding box and computes the midpoint between the
@@ -247,28 +224,22 @@ def object_dimension(directory_obj, pixel_size,  lim, area, name_save):
     ratio (float):
         Value of the ratio of the two diameters
     """
-    image = cv2.imread(directory_obj)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # perform the countour
-    gray = cv2.GaussianBlur(gray, (7, 7), 0)
-    edged = cv2.Canny(gray, 50, 100)
-    edged = cv2.dilate(edged, None, iterations=1)
-    edged = cv2.erode(edged, None, iterations=1)
-    # find contours in the edge map
-    cnts = cv2.findContours(
-        edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cnts = imutils.grab_contours(cnts)
+    image = cv2.imread(directory_obj, cv2.IMREAD_GRAYSCALE)
+    _, threshold = cv2.threshold(image, 110, 255, cv2.THRESH_BINARY)
+    contours= cv2.findContours(threshold.copy(), cv2.RETR_TREE,
+                                  cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(contours)
 
-    dimUno = np.array([])
-    dimDue = np.array([])
+    dimS = np.array([])
+    dimL = np.array([])
     ratio_array = np.array([])
 
     if cnts != []:
         # sort the contours from left-to-right
-        (cnts, _) = contours.sort_contours(cnts)
+        # (cnts, _) = contours.sort_contours(cnts)
         n = 0
-        dimUno = np.array([])
-        dimDue = np.array([])
+        dimS = np.array([])
+        dimL = np.array([])
         ratio_array = np.array([])
 
         for c in cnts:
@@ -288,11 +259,6 @@ def object_dimension(directory_obj, pixel_size,  lim, area, name_save):
             (trbrX, trbrY) = midpoint(tr, br)
             dx = np.abs(tltrX-blbrX)
             dy = np.abs(tlblY-trbrY)
-        # draw lines between the midpoints
-            cv2.line(orig, (int(tltrX), int(tltrY)),
-                     (int(blbrX), int(blbrY)), (5, 0, 255), 2)
-            cv2.line(orig, (int(tlblX), int(tlblY)),
-                     (int(trbrX), int(trbrY)), (255, 0, 255), 2)
         # compute the Euclidean distance between the midpoints
         # dA  variable will contain the height distance (pixels)
         # dB  will hold our width distance (pixels).
@@ -304,177 +270,43 @@ def object_dimension(directory_obj, pixel_size,  lim, area, name_save):
                 dimA = dA * pixel_size
                 dimB = dB * pixel_size
 
-                diff = dA - dB
-                if diff < 0:
-                    ratio = dA/dB
-                    dimS = dimA
-                    dimL = dimB
-                else:
-                    ratio = dB/dA
-                    dimS = dimB
-                    dimL = dimA
+                major = max(dimA, dimB)
+                minor = min(dimA,dimB)
+                ratio = minor/major
 
-                if (dimS < 100) and (dimS > 0) and (ratio > 0) and (dimL < 100) and (dimL > 0) and (len(area) <= 10) and (all(area < 500)):
-                    cv2.putText(orig, "{:.1f}um".format(dimA), (int(
-                        tltrX - 5), int(tltrY - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (100, 100, 100), 1)
-                    cv2.putText(orig, "{:.1f}um".format(dimB), (int(
-                        trbrX + 8), int(trbrY + 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (100, 100, 100), 1)
-                    result = Image.fromarray((orig).astype('uint8'))
-                    result.save(name_save+'_'+str(n)+'.pdf')
-                else:
-                    dimS = 0
-                    dimL = 0
-                    ratio = 0
-                    dx = 0
-                    dy = 0
-                    dimUno = np.append(dimUno, dimS)
-                    dimDue = np.append(dimDue, dimL)
-                    ratio_array = np.append(ratio_array, ratio)
+                plt.plot([tltrX,blbrX],[tltrY,blbrY], color = "yellow", linewidth=3)
+                plt.plot([tlblX,trbrX] ,[tlblY, trbrY], color = "lime", linewidth=3)
+                plt.imshow(orig, cmap = "gray")  
+                plt.text(dim -20,10,"major:"+ str(round(major,2))+" $\mathrm{\mu}$m", color="w")
+                plt.text(dim-20,20,"minor:"+str(round(minor,2))+" $\mathrm{\mu}$m", color="w")
+                plt.colorbar()
+                plt.axis('off')
+                plt.savefig(name_save+'_'+str(n)+'.pdf')
+                plt.close()
+
+               
             else:
-                dimS = 0
-                dimL = 0
+                major = 0
+                minor= 0
                 ratio = 0
                 dx = 0
                 dy = 0
-                dimUno = np.append(dimUno, dimS)
-                dimDue = np.append(dimDue, dimL)
+                dimS = np.append(dimS, minor)
+                dimL = np.append(dimL, major)
                 ratio_array = np.append(ratio_array, ratio)
 
             n = n+1
-            dimUno = np.append(dimUno, dimS)
-            dimDue = np.append(dimDue, dimL)
+            dimS = np.append(dimS, minor)
+            dimL = np.append(dimL, major)
             ratio_array = np.append(ratio_array, ratio)
     else:
-        dimS = 0
-        dimL = 0
+        major = 0
+        minor= 0
         ratio = 0
         dx = 0
         dy = 0
-        dimUno = np.append(dimUno, dimS)
-        dimDue = np.append(dimDue, dimL)
+        dimS = np.append(dimS, minor)
+        dimL = np.append(dimL, major)
         ratio_array = np.append(ratio_array, ratio)
 
-    return dimUno, dimDue, ratio_array, dx, dy
-
-
-def simmetry(holo_cut, R, A, freq, lim, graph_name):
-    """Function to find the simmetry of the object startin from the hologram path
-
-    Args
-    -------------------------------------------------------
-        holo_cut (:class:`.Image` or :class:`.VectorGrid`):
-            Matrix data of the feature of interest of hologram
-        R (:class:`.Image` or :class:`.VectorGrid`):
-            Matrix of positions
-        A (:class:`.Image` or :class:`.VectorGrid`):
-            Matrix of angles (°)
-        freq (int):
-            Step of the angle
-        lim (int):
-            Half length of the hologram (center of the hologram)
-        graph_name (str):
-            Name of the graph saved
-
-    Returns
-    -------------------------------------------------------
-        0
-    """
-    angle = 30
-    holo_forma = holo_cut[0, :, :].values
-    x_forma = np.arange(0, 360, 30)
-    x_forma2 = np.arange(0, 360, angle-10)
-
-    mxt1 = np.where(R <= freq*60, holo_forma, 0)
-    mxt2 = np.where(R <= freq*180, holo_forma, 0)
-    mxt2 = np.where(R > freq*60, mxt2, 0)
-    if R[0, int(lim)] < freq*300:
-        mxt3 = np.where(R <= R[0, int(lim)], holo_forma, 0)
-    else:
-        mxt3 = np.where(R <= freq*300, holo_forma, 0)  # R[0,int(lim)]
-    mxt3 = np.where(R > freq*180, mxt3, 0)
-
-    value1 = np.array([])
-    value2 = np.array([])
-    value3 = np.array([])
-    for i_forma in x_forma:
-        mtx1 = np.where((A <= i_forma+angle) & (A >= i_forma), mxt1, 0)
-        value1 = np.append(value1, np.mean(np.abs(mtx1)))
-        mtx2 = np.where((A <= i_forma+angle) & (A >= i_forma), mxt2, 0)
-        value2 = np.append(value2, np.mean(np.abs(mtx2)))
-    for i_forma in x_forma2:
-        mtx3 = np.where((A <= i_forma+angle-10) & (A >= i_forma), mxt3, 0)
-        value3 = np.append(value3, np.mean(np.abs(mtx3)))
-
-    value1 = value1/np.amax(value1)
-    value2 = value2/np.amax(value2)
-    value3 = value3/np.amax(value3)
-
-    plt.plot(x_forma, value1, '-*', label='First Rings')
-    plt.ylim(0, 1.1)
-    plt.title('Simmetry Object')
-    plt.xlabel('Angle (°C)')
-    plt.ylabel('Intensity Norm.')
-
-    plt.plot(x_forma, value2, '-*', label='Second Rings')
-    plt.ylim(0, 1.1)
-    plt.title('Simmetry Object')
-    plt.xlabel('Angle (°C)')
-    plt.ylabel('Intensity Norm.')
-
-    plt.plot(x_forma2, value3, '-*', label='Third Rings')
-    plt.ylim(0, 1.1)
-    plt.title('Simmetry Object')
-    plt.xlabel('Angle (°C)')
-    plt.ylabel('Intensity Norm.')
-    plt.legend()
-    plt.title(str("{:.2f}".format(np.std(value1)))+', '+str(
-        "{:.2f}".format(np.std(value2)))+', ' + str("{:.2f}".format(np.std(value3))))
-    plt.savefig(graph_name)
-    plt.clf()
-    plt.close()
-
-    return 0
-
-
-def plot_bello(z, holo_cut, illum_wavelen, medium_index, lim, nome_graph):
-    """
-    Calculates the plot of the propagation of the hologram along the optical
-    axis and at the center of the hologram both studing the intensity of the
-    field and the phase of the field. 
-
-    Args
-    -------------------------------------------------------
-    z (float or list of floats):
-        Distance to propagate  
-    holo_cut (:class:`.Image` or :class:`.VectorGrid`):
-        Matrix data of the feature of interest of hologram
-    illum_wavelen (float):
-        Source wavelength
-    medium index (str):
-        Refraction index of the medium      
-    lim (int):
-        Half length of the hologram (center of the hologram)
-    nome_graph (str): 
-        Name of the graph saved
-
-    Returns
-    -------------------------------------------------------
-    0   
-    """
-    holo_cut = holo_cut + 1
-    rec_vol = hp.propagate(
-        holo_cut, z, illum_wavelen=illum_wavelen, medium_index=medium_index)
-
-    modulo = propagation_module(z, rec_vol, int(lim), int(lim), 5)
-
-    phase = np.angle(rec_vol)
-    onda_riferimento = np.angle(
-        np.e**((-1j*2*np.pi*z/(illum_wavelen/medium_index))))
-    fase, only_p, only_phase = propagation_phase(phase, onda_riferimento, z, int(
-        lim), int(lim), 1)  # int(centro[0]),int(centro[1])
-
-    fase = np.nan_to_num(fase)
-    plot_twin_propagation(0, z, modulo, fase, nome_graph)
-    holo_cut = holo_cut - 1
-
-    return 0
+    return dimS, dimL, ratio_array, dx, dy
