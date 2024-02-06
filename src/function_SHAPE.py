@@ -257,8 +257,7 @@ def object_dimension(directory_obj, pixel_size,  lim, area, dim, name_save):
             (blbrX, blbrY) = midpoint(bl, br)
             (tlblX, tlblY) = midpoint(tl, bl)
             (trbrX, trbrY) = midpoint(tr, br)
-            dx = np.abs(tltrX-blbrX)
-            dy = np.abs(tlblY-trbrY)
+
         # compute the Euclidean distance between the midpoints
         # dA  variable will contain the height distance (pixels)
         # dB  will hold our width distance (pixels).
@@ -289,8 +288,6 @@ def object_dimension(directory_obj, pixel_size,  lim, area, dim, name_save):
                 major = 0
                 minor= 0
                 ratio = 0
-                dx = 0
-                dy = 0
                 dimS = np.append(dimS, minor)
                 dimL = np.append(dimL, major)
                 ratio_array = np.append(ratio_array, ratio)
@@ -303,10 +300,8 @@ def object_dimension(directory_obj, pixel_size,  lim, area, dim, name_save):
         major = 0
         minor= 0
         ratio = 0
-        dx = 0
-        dy = 0
         dimS = np.append(dimS, minor)
         dimL = np.append(dimL, major)
         ratio_array = np.append(ratio_array, ratio)
 
-    return dimS, dimL, ratio_array, dx, dy
+    return dimS, dimL, ratio_array
