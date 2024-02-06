@@ -1,7 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-This program analyses ice core dust holograms  
+This program analyses ice core dust holograms
+The bash script must be out of the folder work.
+The folder work must content: "data" (folder with image)
+                              "bg" (data with background. Bg must namely as in ImageCorrect.py file"
+The script creats authomatically the folders with the results.
+
+If you are calybrating the system with polystetyren set args.sample_name = "polystyrene"
 """
 
 import os
