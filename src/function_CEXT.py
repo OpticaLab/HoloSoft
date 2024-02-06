@@ -117,7 +117,7 @@ def Cext_tw_integration(medium_index, illum_wavelen, illum_polarization, Integra
         plt.figure(figsize=(12, 8))
         plt.plot(x, Integral_array, 'b', linewidth=2, alpha=0.5)
 
-        if data == 'poli':
+        if data == 'polystyrene':
             plt.plot(x1, np.ones(len(x1)) *
                      x_sec[2].values, '<--g', label='Cext Expected')
 
