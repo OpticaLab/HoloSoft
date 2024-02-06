@@ -342,7 +342,7 @@ for i in data_path_list:
                               except FileNotFoundError:
                                    print('no cext')
                                    
-                         elif (Cext_tw_Integration_Square >args.cext_min) and (len(area)>1) and (len(area)<10):
+                         else:
                                 if len(area)>2:  
                                     if len(area)>3 :
                                         print(i)
@@ -366,8 +366,7 @@ for i in data_path_list:
                                     print(i)
                                     print('write')  
                                     print (str(i)+' '+str(z[focal_position])+' '+str(center_x_0)+' '+str(center_y_0)+' '+str(lim)+' '+str(area[1])+' '+str(dimA1[0])+' '+str(dimB1[0])+' '+str(Cext_tw_Integration_Square)+' '+str(dx)+' '+str(dy),file=dati)
-                            else:
-                                print("cext or area fuori range")
+                            
                       
         numb =numb+1                                  
         cont_bg = cont_bg +1
